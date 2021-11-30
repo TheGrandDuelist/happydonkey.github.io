@@ -2,7 +2,7 @@
 #   Main Configs   #
 # ---------------- #
 baseurl:
-url:
+url: https://thegrandduelist.github.io/happydonkey.github.io/
 date_format: "ordinal"
 title: A8 Club
 subtitle: "闷骚的程序员"
