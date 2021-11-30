@@ -2,7 +2,7 @@
 #   Main Configs   #
 # ---------------- #
 baseurl:
-url: happydonkey.fun
+url: https://happydonkey.fun
 date_format: "ordinal"
 title: A8 Club
 subtitle: "闷骚的程序员"
