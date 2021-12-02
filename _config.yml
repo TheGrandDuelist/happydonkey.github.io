@@ -5,9 +5,9 @@ baseurl:
 url: https://happydonkey.fun
 date_format: "ordinal"
 title: A8 Club
-subtitle: "闷骚的程序员"
-description: "个人博客，闷骚的程序员,"
-keywords: happydonkey, 闷骚的程序员
+subtitle: "想钓鱼去的程序员"
+description: "程序员,Python，钓鱼，游戏"
+keywords: happydonkey, 闷骚的程序员，Python，钓鱼，游戏
 timezone: Asia/Shanghai
 encoding: "utf-8"
 repository: TheGrandDuelist/happydonkey.github.io
