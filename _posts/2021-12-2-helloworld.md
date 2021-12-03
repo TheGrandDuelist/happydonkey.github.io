@@ -1,7 +1,7 @@
 ---
 layout: post
 title: hello world!
-categories: [test1, cate2]
+categories: [杂谈]
 description: 第一篇博客，hello world 奉上吧
 keywords: 博客, hello world
 ---
