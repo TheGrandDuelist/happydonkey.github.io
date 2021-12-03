@@ -133,14 +133,14 @@ disqus:
     username: 
 # https://imsun.net/posts/gitment-introduction/
 gitment:
-    owner: happydonkey
+    owner: TheGrandDuelist
     repo: blog-comments
     oauth:
         client_id: d1277f2e3996c5c9057f
         client_secret: 966e3601e8ab5733a693f9889a23c53579e21eee
 # https://github.com/gitalk/gitalk#install
 gitalk:
-    owner: happydonkey
+    owner: TheGrandDuelist
     repo: blog-comments
     clientID: d1277f2e3996c5c9057f
     clientSecret: 966e3601e8ab5733a693f9889a23c53579e21eee
