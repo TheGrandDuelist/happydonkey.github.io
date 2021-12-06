@@ -1,95 +1,200 @@
-# 码志
+# 关于这个Jekyll模板主题 ⚽⚽⚽
 
-我的个人博客：<https://mazhuang.org>，欢迎 Star 和 Fork。
+## 预览
 
-## 概览
+### 首页
 
-<!-- vim-markdown-toc GFM -->
+![首页](https://github.com/maoxiaoke/maoxiaoke.github.io/blob/master/styles/images/blog/blog.png?raw=true)
 
-* [效果预览](#效果预览)
-* [Fork 指南](#fork-指南)
-* [使用文档](#使用文档)
-* [经验与思考](#经验与思考)
-* [联系我](#联系我)
-* [致谢](#致谢)
++ 首页: 博客首页
++ 博文分类: 按照categories对文章进行分类
++ 标签分类: 按照tags对文章进行分类
++ 外域链接: 存放一些想要其他网站的链接
++ DEMO: 存放个人项目
++ 打赏我: 提供donation
++ 关于我: 个人CV
 
-<!-- vim-markdown-toc -->
+### 文章页
 
-## 效果预览
+![文章页](https://github.com/maoxiaoke/maoxiaoke.github.io/blob/master/styles/images/blog/page.png?raw=true)
 
-**[在线预览 &rarr;](https://mazhuang.org)**
+---
 
-![screenshot home](https://mazhuang.org/assets/images/screenshots/home.png)
+## 功能简介
 
-## Fork 指南
+### 提供全文搜索
 
-Fork 本项目之后，还需要做一些事情才能让你的页面「正确」跑起来。
+博客使用[`Simple-Jekyll-Search`](https://github.com/christian-fei/Simple-Jekyll-Search)提供全文搜索功能。
 
-1. 正确设置项目名称与分支。
+相关介绍和操作可参考: [加入搜索功能](http://xiaokedada.com/2017/05/09/Jekyll-second/#加入搜索功能)
 
-   按照 GitHub Pages 的规定，名称为 `username.github.io` 的项目的 master 分支，或者其它名称的项目的 gh-pages 分支可以自动生成 GitHub Pages 页面。
+### 提供百度统计功能
 
-2. 修改域名。
+博客使用[百度统计](https://tongji.baidu.com/web/welcome/login)提供统计功能。具体操作方法在官网有详细介绍。
 
-   如果你需要绑定自己的域名，那么修改 CNAME 文件的内容，并参考 [配置 GitHub Pages 站点的自定义域](https://docs.github.com/cn/pages/configuring-a-custom-domain-for-your-github-pages-site) 做好配置；如果不需要绑定自己的域名，那么删掉 CNAME 文件。
+相关介绍和操作可参考: [添加网站统计](http://xiaokedada.com/2017/05/09/Jekyll-second/#添加网站统计)
 
-3. 修改配置。
+### 提供不蒜子pv/uv计数器
 
-   网站的配置基本都集中在 \_config.yml 文件中，将其中与个人信息相关的部分替换成你自己的，比如网站的 url、title、subtitle 和第三方评论模块的配置等。
+[不蒜子](http://busuanzi.ibruce.info/)可以提供pv/uv的计数。好处在于可以在界面上显示访问量。
 
-   **评论模块：** 目前支持 disqus、gitment 和 gitalk，选用其中一种就可以了，推荐使用 gitalk。它们各自的配置指南链接在 \_config.yml 文件的 Comments 一节里都贴出来了。
+相关介绍和操作可参考: [网页的pv/uv计数器](http://xiaokedada.com/2017/05/09/Jekyll-second/#网页的pvuv计数器)
 
-   **注意：** 如果使用 disqus，因为 disqus 处理用户名与域名白名单的策略存在缺陷，请一定将 disqus.username 修改成你自己的，否则请将该字段留空。我对该缺陷的记录见 [Issues#2][3]。
+### 添加社会化评论功能
 
-4. 删除我的文章与图片。
+<del>博客采用第三方评论平台[网易云跟帖](https://gentie.163.com/info.html)</del>。
 
-   如下文件夹中除了 template.md 文件外，都可以全部删除，然后添加你自己的内容。
+博客采用第三方评论平台[Gitment](https://github.com/imsun/gitment)
 
-   * \_posts 文件夹中是我已发布的博客文章。
-   * \_drafts 文件夹中是我尚未发布的博客文章。
-   * \_wiki 文件夹中是我已发布的 wiki 页面。
-   * images 文件夹中是我的文章和页面里使用的图片。
+相关介绍和操作可参考: [社会化评论](http://xiaokedada.com/2017/05/09/Jekyll-second/#社会化网页评论)
 
-5. 修改「关于」页面。
+### 使用canvas实现首页动态效果
 
-   pages/about.md 文件内容对应网站的「关于」页面，里面的内容多为个人相关，将它们替换成你自己的信息，包括 \_data 目录下的 skills.yml 和 social.yml 文件里的数据。
+### 使用日历控件显示当前日期
 
-## 使用文档
+[在线演示](http://xiaokedada.com/effects/demo/demo-calender/index.html)
 
-- [本博客模板常见问题 Q & A](https://mazhuang.org/2020/05/03/blog-template-qna/)。
+### 使用tagCloud控件实现云标签效果
 
-- 在本地预览博客效果可以参考 [Setting up your Pages site locally with Jekyll][2]。
+[在线演示](http://xiaokedada.com/effects/demo/demo-tagscloud/index.html)
 
-## 经验与思考
+---
 
-* 排版建议遵照一定的规范，推荐 [中文文案排版指北（简体中文版）][1]。
+## 博客使用方法
 
-* 简约，尽量每个页面都不展示多余的内容。
+初识Jekyll博客，有必要了解[Jekyll](https://jekyllrb.com/)有关知识。
 
-* 有时一图抵千言，有时可能只会拖慢网页加载速度。
+相关的内容我写了两篇文章可供参考
 
-* 言之有物，不做无痛之呻吟。
++ [基于Jekyll静态框架的Github站点设计](http://xiaokedada.com/2017/02/22/Jekyll-Cpanel/)
++ [Jekyll搭建博客--人类补完计划](http://xiaokedada.com/2017/05/09/Jekyll-second/)
 
-* 如果写技术文章，那先将技术原理完全理清了再开始写，一边摸索技术一边组织文章效率较低。
+### 部署和安装
 
-* 杜绝难断句、难理解的长句子，如果不能将其拆分成几个简洁的短句，说明脑中的理解并不清晰。
+请参考[Jekyll相关](http://xiaokedada.com/2017/02/22/Jekyll-Cpanel/#jekyll相关)。
 
-* 可以学习一下那些高质量的博主，他们的行文，内容组织方式，有什么值得借鉴的地方。
+### 下载本博客源码
 
-## 联系我
+欢迎fork, clone and star。
 
-如果对本博客模板或者内容有任何建议，可以通过 [Issues](https://github.com/mzlogin/mzlogin.github.io/issues) 或者微信公众号「闷骚的程序员」与我取得联系。
+### 修改_config.yml文件
 
-<img width="192px" height="192px" src="https://mazhuang.org/assets/images/qrcode.jpg"/>
+包括相关的一些设置参数，包括banner/motto/description等。
 
-## 致谢
+> 直接修改便会生效。
 
-本博客外观基于 [DONGChuan](https://dongchuan.github.io) 修改，感谢！
+### 写文章
 
-Thanks for JetBrains' support.
+文章放在`_post`文件夹下，可创建自命名文件夹。支持markdown编写，提供`post`(知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议)/`original`(原创文章)两种方式。
 
-<a href="https://www.jetbrains.com/?from=mzlogin.github.io"><img src="./assets/images/jetbrains.svg"/></a>
+文件命名示例如下:
 
-[1]: https://github.com/mzlogin/chinese-copywriting-guidelines
-[2]: https://help.github.com/articles/setting-up-your-pages-site-locally-with-jekyll/
-[3]: https://github.com/mzlogin/mzlogin.github.io/issues/2
+```
+2017-03-23-More-of-prototype.md
+```
+
+文章首部字段为:
+
+```markdown
+---
+layout: post
+title: "再谈原型和继承"
+date: 2017-03-23 09:00:00 +0800
+categories: 研究生涯
+tag: JavaScript
+---
+* content
+{:toc}
+```
+
+多tag可参考文章:[加入多个标签](http://xiaokedada.com/2017/05/09/Jekyll-second/#如何加入多个标签)
+
+> 备注一: Jekyll使用时间对文章进行排序，所以无论如何建立文件夹和文件夹命名都行，你开心就好
+
+> 备注二: 未完成的草稿文章可以放在`_draft`文件夹中
+
+### 运行
+
+使用下面命令可直接运行:
+
+```bash
+$ jekyll s
+```
+
+会开启jekyll服务器，监听在`http://127.0.0.1:4000/`，使用浏览器访问呢。
+
+不想查看效果，可直接bulid。
+
+```bash
+$ jekyll build
+```
+
+> 备注: 草稿区的内容不会显示，如果想要对草稿去内容进行查看，可参考[开启草稿](http://xiaokedada.com/2017/05/09/Jekyll-second/#jekyll的一些使用技巧)
+
+### 发布
+
+发布请保留主题来源。
+
+```text
+Copyright © 2017 M/J. All rights reserved.
+```
+
+---
+
+## Update Log
+
+### 2017.07.16
+
+- [-] 删除网易云跟帖
+- [+] 将网易云跟帖更改为gitment
+- [+] 添加一个新模块: TalkToMe
+
+### 2017.06.17
+
+- [^] 改变文章字体
+- [+] 增加不蒜子
+- [^] 将多说更改为网易云跟帖
+- [+] 添加搜索功能
+- [^] 代码高亮改为rouge
+
+
+### 2017.04.20
+
+- [+] First commit
+- [+] 添加首页Canvas效果
+- [+] 添加日历控件
+- [+] 添加云标签控件
+- [+] 添加社会化评论多说
+- [+] 大量优化
+- [+] 添加favicon.ico
+
+---
+
+## 打赏
+
+<p align="center">所以，如果你喜欢这个博客，有些许收获。就请支持我。</p>
+
+### 赞助方式1： 支付宝付款
+
+您可以选择手机支付宝扫一扫
+
+<img src="https://github.com/maoxiaoke/maoxiaoke.github.io/blob/master/styles/images/zhifubao.jpg?raw=true" alt="支付宝二维码付款给小可嗒嗒" />
+
+### 赞助方式2： 微信扫一扫
+
+您可以选择手机微信扫一扫
+
+![微信二维码付款给小可嗒嗒](https://github.com/maoxiaoke/maoxiaoke.github.io/blob/master/styles/images/wechat.jpg?raw=true)
+
+### 赞助名单
+
++ 2017-02-21 09:52:10 收到微信用户xxx的`￥1.00`
++ 2017-02-21 15:59:00 收到支付宝用户241***@qq.com的`￥6.66`
++ 2017-02-21 19:53:37 收到微信用户xxx的`￥6.66`
++ 2017-02-21 22:33:33 收到微信用户xxx`￥6.66`
++ 2017-02-22 08:36:00 收到支付宝用户116***@qq.com的`￥1.66`
++ 2017-07-24 22:05:00 收到支付宝用户118***10的`￥6.66`
+
+手动笔芯
+
+---
