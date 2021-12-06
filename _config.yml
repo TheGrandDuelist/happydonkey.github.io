@@ -1,6 +1,6 @@
 # Site settings
 name: 想钓鱼去的程序员
-email: maoxiaoke@outlook.com
+email: None
 author: happydonkey
 url: https://happydonkey.fun
 resume_site: https://happydonkey.fun/me/
@@ -17,7 +17,7 @@ paginate: 8
 paginate_path: "page:num"
 gems: [jekyll-paginate]
 exclude: ['README.md', 'Gemfile.lock', 'Gemfile', 'Rakefile']
-github_username: maoxiaoke
+github_username: happydonkey
 highlighter: rouge
 markdown: kramdown
 FB:
