@@ -6,6 +6,6 @@ categories: 杂谈
 tag: Funny
 ---
 ### hello world
-`
+```buildoutcfg
 print('hello world)
-`
+```
