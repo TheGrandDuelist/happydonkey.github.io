@@ -1,6 +1,6 @@
 ---
 layout: copy
-title: 哎呦喂！！！
+title: 杂货铺收藏屋
 date: 2021-12-07 13:15:15 +0800
 permalink: /reference/
 ---
