@@ -12,7 +12,8 @@ abbr {text-decoration: none;}
 <!-- flutter -->
 <hr><h4 class="btn btn-info btn-lg">Flutter</h4><hr>
 <ol class="rectangle-list">
-<li><a href="https://flutter.cn/" target="_blank">Flutter</a></li>
+<li><a href="https://flutter.cn/" target="_blank">Flutter中文网</a></li>
+<li><a href="https://book.flutterchina.club/" target="_blank">Flutter实战电子书</a></li>
 </ol>
 
 <!-- python -->
@@ -20,6 +21,14 @@ abbr {text-decoration: none;}
 <hr><h4 class="btn btn-primary btn-lg">Python相关</h4><hr>
 <ol class="rounded-list">
 <li><a href="http://jobbole.github.io/awesome-python-cn/" target="_blank">Python资源库</a></li>
+</ol>
+
+<!-- Java -->
+
+<hr><h4 class="btn btn-primary btn-lg">Java相关</h4><hr>
+<ol class="rounded-list">
+<li><a href="https://springboot.plus" target="_blank">SpringBootPlus</a></li>
+<li><a href="http://www.jeecg.com/" target="_blank">jeecg-boot</a></li>
 </ol>
 
 <!-- blockchain -->
@@ -44,10 +53,6 @@ abbr {text-decoration: none;}
 <li><a href="http://baconipsum.com/" target="_blank"><abbr title="提供文本填充器的网站">Bacon IPsum</abbr></a></li>
 <li><a href="https://placeholder.com/" target="_blank"><abbr title="提供占位符图片的网站">PLACEHOLDER.COM</abbr></a></li>
 <li><a href="https://dummyimage.com/" target="_blank"><abbr title="提供多类型占位符图片的网站">Dummy Image Generator</abbr></a></li>
-</ol>
-<hr><h4 class="btn btn-primary btn-lg">博客</h4><hr>
-<ol class="rounded-list">
-<li><a href="http://2ality.com/p/about.html" target="_blank">2ality</a></li>
 </ol>
 <hr><h4 class="btn btn-primary btn-lg">综合站点</h4><hr>
 <ol class="rounded-list">
