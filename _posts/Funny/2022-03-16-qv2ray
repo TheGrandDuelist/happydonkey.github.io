@@ -1,0 +1,14 @@
+---
+layout: post
+title: "qv2ray+jcbb"
+date: 2022-03-16 12:05:00 +0800 
+categories: 杂谈
+tag: Funny
+---
+### qv2ray+jcbb
+```buildoutcfg
+1.[http://qv2ray.net/lang/zh/getting-started/]qv2ray下载
+2.配置v2ray-core,配置 *.dat数据(sudo -i 直接su权限使用 install.sh安装，规避权限问题)
+3.qv2ray kernel settings 里面配置好上面的安装路径
+4.qv2ray->分组->订阅设置(此分组是订阅勾选)->填写订阅地址，更新订阅
+```
