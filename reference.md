@@ -8,6 +8,12 @@ permalink: /reference/
 <style>
 abbr {text-decoration: none;}
 </style>
+<!-- go -->
+<hr><h4 class="btn btn-info btn-lg">Go</h4><hr>
+<ol class="rectangle-list">
+<li><a href="https://www.topgoer.com/" target="_blank">Go文档</a></li>
+<li><a href="https://www.topgoer.cn/" target="_blank">地鼠文档</a></li>
+</ol>
 
 <!-- flutter -->
 <hr><h4 class="btn btn-info btn-lg">Flutter</h4><hr>
