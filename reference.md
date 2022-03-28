@@ -22,26 +22,12 @@ abbr {text-decoration: none;}
 <li><a href="https://book.flutterchina.club/" target="_blank">Flutter实战电子书</a></li>
 </ol>
 
-<!-- python -->
-
-<hr><h4 class="btn btn-primary btn-lg">Python相关</h4><hr>
-<ol class="rounded-list">
-<li><a href="http://jobbole.github.io/awesome-python-cn/" target="_blank">Python资源库</a></li>
-</ol>
-
 <!-- Java -->
 
 <hr><h4 class="btn btn-primary btn-lg">Java相关</h4><hr>
 <ol class="rounded-list">
 <li><a href="https://springboot.plus" target="_blank">SpringBootPlus</a></li>
 <li><a href="http://www.jeecg.com/" target="_blank">jeecg-boot</a></li>
-</ol>
-
-<!-- blockchain -->
-<hr><h4 class="btn btn-info btn-lg">BlockChain</h4><hr>
-<ol class="rectangle-list">
-<li><a href="https://pancakeswap.finance/" target="_blank">pancakeswap</a></li>
-<li><a href="https://coinmarketcap.com/" target="_blank">coinmarketcap</a></li>
 </ol>
 
 <!-- 资源网站 -->
