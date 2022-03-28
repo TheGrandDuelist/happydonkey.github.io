@@ -19,6 +19,7 @@ abbr {text-decoration: none;}
 <hr><h4 class="btn btn-info btn-lg">Flutter</h4><hr>
 <ol class="rectangle-list">
 <li><a href="https://flutter.cn/" target="_blank">Flutter中文网</a></li>
+<li><a href="https://flutterawesome.com/" target="_blank">flutterawesome样例</a></li>
 <li><a href="https://book.flutterchina.club/" target="_blank">Flutter实战电子书</a></li>
 </ol>
 
