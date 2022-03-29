@@ -13,6 +13,7 @@ abbr {text-decoration: none;}
 <ol class="rectangle-list">
 <li><a href="https://www.topgoer.com/" target="_blank">Go文档</a></li>
 <li><a href="https://www.topgoer.cn/" target="_blank">地鼠文档</a></li>
+<li><a href="https://awesome-go.com/" target="_blank">Awesome Go</a></li>
 </ol>
 
 <!-- flutter -->
