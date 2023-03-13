@@ -32,6 +32,9 @@ func (c *FansController) PostFollow() *web.JsonResult {
 	if err != nil {
 		return web.JsonError(err)
 	}
+	if current != nil && current.Id != userId {
+    		followed = services.UserFollowService.IsFollowed(current.Id, userId)
+    }
 	return web.JsonSuccess()
 }
 
@@ -80,6 +83,12 @@ func (c *FansController) GetFans() *web.JsonResult {
 		item.Followed = followedSet.Contains(id)
 		itemList = append(itemList, item)
 	}
+	var itemList []*model.UserInfo
+    	for _, id := range userIds {
+    		item := render.BuildUserInfoDefaultIfNull(id)
+    		item.Followed = followedSet.Contains(id)
+    		itemList = append(itemList, item)
+    	}
 	return web.JsonCursorData(itemList, strconv.FormatInt(cursor, 10), hasMore)
 }
 
@@ -101,12 +110,6 @@ func (c *FansController) GetFollows() *web.JsonResult {
 		}
 	}
 
-	var itemList []*model.UserInfo
-	for _, id := range userIds {
-		item := render.BuildUserInfoDefaultIfNull(id)
-		item.Followed = followedSet.Contains(id)
-		itemList = append(itemList, item)
-	}
 	return web.JsonCursorData(itemList, strconv.FormatInt(cursor, 10), hasMore)
 }
 
@@ -120,12 +123,6 @@ func (c *FansController) GetRecentFans() *web.JsonResult {
 		followedSet = services.UserFollowService.IsFollowedUsers(current.Id, userIds...)
 	}
 
-	var itemList []*model.UserInfo
-	for _, id := range userIds {
-		item := render.BuildUserInfoDefaultIfNull(id)
-		item.Followed = followedSet.Contains(id)
-		itemList = append(itemList, item)
-	}
 	return web.JsonCursorData(itemList, strconv.FormatInt(cursor, 10), hasMore)
 }
 
