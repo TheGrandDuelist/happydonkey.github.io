@@ -15,16 +15,6 @@ type SearchController struct {
 	Ctx iris.Context
 }
 
-func (c *SearchController) AnyReindex() *web.JsonResult {
-	go services.TopicService.ScanDesc(func(topics []model.Topic) {
-		for _, t := range topics {
-			topic := services.TopicService.Get(t.Id)
-			es.UpdateTopicIndex(topic)
-		}
-	})
-	return web.JsonSuccess()
-}
-
 func (c *SearchController) PostTopic() *web.JsonResult {
 	var (
 		page      = params.FormValueIntDefault(c.Ctx, "page", 1)
@@ -40,4 +30,14 @@ func (c *SearchController) PostTopic() *web.JsonResult {
 
 	items := render.BuildSearchTopics(docs)
 	return web.JsonPageData(items, paging)
+}
+
+func (c *SearchController) AnyReindex() *web.JsonResult {
+	go services.TopicService.ScanDesc(func(topics []model.Topic) {
+		for _, t := range topics {
+			topic := services.TopicService.Get(t.Id)
+			es.UpdateTopicIndex(topic)
+		}
+	})
+	return web.JsonSuccess()
 }
