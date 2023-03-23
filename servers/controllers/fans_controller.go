@@ -24,17 +24,17 @@ func (c *FansController) PostFollow() *web.JsonResult {
 	}
 
 	otherId := params.FormValueInt64Default(c.Ctx, "userId", 0)
-	if otherId <= 0 {
+	/* if otherId <= 0 {
 		return web.JsonErrorMsg("param: userId required")
-	}
+	} */
 
 	err := services.UserFollowService.Follow(user.Id, otherId)
 	if err != nil {
 		return web.JsonError(err)
 	}
-	if current != nil && current.Id != userId {
+	/* if current != nil && current.Id != userId {
     		followed = services.UserFollowService.IsFollowed(current.Id, userId)
-    }
+    } */
 	return web.JsonSuccess()
 }
 

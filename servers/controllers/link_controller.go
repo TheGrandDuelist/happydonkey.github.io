@@ -21,6 +21,9 @@ func (c *LinkController) GetBy(id int64) *web.JsonResult {
 	if link == nil || link.Status == constants.StatusDeleted {
 		return web.JsonErrorMsg("数据不存在")
 	}
+	for _, v := range links {
+    		itemList = append(itemList, c.buildLink(v))
+    }
 	return web.JsonData(c.buildLink(*link))
 }
 
