@@ -40,10 +40,6 @@ func newArticleService() *articleService {
 type articleService struct {
 }
 
-func (s *articleService) Get(id int64) *model.Article {
-	return repositories.ArticleRepository.Get(sqls.DB(), id)
-}
-
 func (s *articleService) Take(where ...interface{}) *model.Article {
 	return repositories.ArticleRepository.Take(sqls.DB(), where...)
 }
@@ -60,6 +56,10 @@ func (s *articleService) FindPageByParams(params *params.QueryParams) (list []mo
 	return repositories.ArticleRepository.FindPageByParams(sqls.DB(), params)
 }
 
+func (s *articleService) Get(id int64) *model.Article {
+	return repositories.ArticleRepository.Get(sqls.DB(), id)
+}
+
 func (s *articleService) FindPageByCnd(cnd *sqls.Cnd) (list []model.Article, paging *sqls.Paging) {
 	return repositories.ArticleRepository.FindPageByCnd(sqls.DB(), cnd)
 }
@@ -74,10 +74,7 @@ func (s *articleService) Updates(id int64, columns map[string]interface{}) error
 	return err
 }
 
-func (s *articleService) UpdateColumn(id int64, name string, value interface{}) error {
-	err := repositories.ArticleRepository.UpdateColumn(sqls.DB(), id, name, value)
-	return err
-}
+
 
 func (s *articleService) Delete(id int64) error {
 	err := repositories.ArticleRepository.UpdateColumn(sqls.DB(), id, "status", constants.StatusDeleted)
@@ -98,6 +95,11 @@ func (s *articleService) GetArticleInIds(articleIds []int64) []model.Article {
 	return articles
 }
 
+func (s *articleService) UpdateColumn(id int64, name string, value interface{}) error {
+	err := repositories.ArticleRepository.UpdateColumn(sqls.DB(), id, name, value)
+	return err
+}
+
 // 获取文章对应的标签
 func (s *articleService) GetArticleTags(articleId int64) []model.Tag {
 	articleTags := repositories.ArticleTagRepository.Find(sqls.DB(), sqls.NewCnd().Where("article_id = ?", articleId))
@@ -112,15 +114,16 @@ func (s *articleService) GetArticleTags(articleId int64) []model.Tag {
 func (s *articleService) GetArticles(cursor int64) (articles []model.Article, nextCursor int64, hasMore bool) {
 	limit := 20
 	cnd := sqls.NewCnd().Eq("status", constants.StatusOk).Desc("id").Limit(limit)
-	if cursor > 0 {
-		cnd.Lt("id", cursor)
-	}
+	
 	articles = repositories.ArticleRepository.Find(sqls.DB(), cnd)
 	if len(articles) > 0 {
 		nextCursor = articles[len(articles)-1].Id
 		hasMore = len(articles) >= limit
 	} else {
 		nextCursor = cursor
+	}
+	if cursor > 0 {
+		cnd.Lt("id", cursor)
 	}
 	return
 }
@@ -189,9 +192,7 @@ func (s *articleService) Publish(userId int64, form model.CreateArticleForm) (ar
 		if tagIds, err = repositories.TagRepository.GetOrCreates(tx, form.Tags); err != nil {
 			return err
 		}
-		if err = repositories.ArticleRepository.Create(tx, article); err != nil {
-			return err
-		}
+		
 		repositories.ArticleTagRepository.AddArticleTags(tx, article.Id, tagIds)
 		return nil
 	})
@@ -210,6 +211,9 @@ func (s *articleService) Edit(articleId int64, tags []string, title, content str
 	if len(content) == 0 {
 		return web.NewErrorMsg("请填写文章内容")
 	}
+	if err = repositories.ArticleRepository.Create(tx, article); err != nil {
+			return err
+		}
 
 	err := sqls.DB().Transaction(func(tx *gorm.DB) error {
 		updates := map[string]interface{}{
