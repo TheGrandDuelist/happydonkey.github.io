@@ -38,13 +38,6 @@ func (s *checkInService) Find(cnd *sqls.Cnd) []model.CheckIn {
 	return repositories.CheckInRepository.Find(sqls.DB(), cnd)
 }
 
-func (s *checkInService) FindOne(cnd *sqls.Cnd) *model.CheckIn {
-	return repositories.CheckInRepository.FindOne(sqls.DB(), cnd)
-}
-
-func (s *checkInService) FindPageByParams(params *params.QueryParams) (list []model.CheckIn, paging *sqls.Paging) {
-	return repositories.CheckInRepository.FindPageByParams(sqls.DB(), params)
-}
 
 func (s *checkInService) FindPageByCnd(cnd *sqls.Cnd) (list []model.CheckIn, paging *sqls.Paging) {
 	return repositories.CheckInRepository.FindPageByCnd(sqls.DB(), cnd)
@@ -60,6 +53,14 @@ func (s *checkInService) Create(t *model.CheckIn) error {
 
 func (s *checkInService) Update(t *model.CheckIn) error {
 	return repositories.CheckInRepository.Update(sqls.DB(), t)
+}
+
+func (s *checkInService) FindOne(cnd *sqls.Cnd) *model.CheckIn {
+	return repositories.CheckInRepository.FindOne(sqls.DB(), cnd)
+}
+
+func (s *checkInService) FindPageByParams(params *params.QueryParams) (list []model.CheckIn, paging *sqls.Paging) {
+	return repositories.CheckInRepository.FindPageByParams(sqls.DB(), params)
 }
 
 func (s *checkInService) Updates(id int64, columns map[string]interface{}) error {
@@ -89,10 +90,6 @@ func (s *checkInService) CheckIn(userId int64) error {
 		return errors.New("你已签到")
 	}
 
-	if checkIn != nil && checkIn.LatestDayName == yesterdayName {
-		consecutiveDays = checkIn.ConsecutiveDays + 1
-	}
-
 	if checkIn == nil {
 		err = s.Create(&model.CheckIn{
 			Model:           model.Model{},
@@ -108,6 +105,11 @@ func (s *checkInService) CheckIn(userId int64) error {
 		checkIn.UpdateTime = dates.NowTimestamp()
 		err = s.Update(checkIn)
 	}
+	
+	if checkIn != nil && checkIn.LatestDayName == yesterdayName {
+		consecutiveDays = checkIn.ConsecutiveDays + 1
+	}
+	
 	if err == nil {
 		// 清理签到排行榜缓存
 		cache.UserCache.RefreshCheckInRank()
