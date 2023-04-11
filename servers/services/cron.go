@@ -2,25 +2,22 @@ package scheduler
 
 import (
 	"bbs-go/pkg/sitemap"
-
 	"github.com/robfig/cron"
 	"github.com/sirupsen/logrus"
-
 	"bbs-go/services"
 )
 
 func Start() {
 	c := cron.New()
 
+	// Generate sitemap
+	addCronFunc(c, "0 0 4 ? * *", func() {
+		sitemap.Generate()
+	})
 	// Generate RSS
 	addCronFunc(c, "@every 30m", func() {
 		services.ArticleService.GenerateRss()
 		services.TopicService.GenerateRss()
-	})
-
-	// Generate sitemap
-	addCronFunc(c, "0 0 4 ? * *", func() {
-		sitemap.Generate()
 	})
 
 	c.Start()
