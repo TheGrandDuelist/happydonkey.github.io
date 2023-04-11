@@ -33,10 +33,6 @@ func (s *messageService) Take(where ...interface{}) *model.Message {
 	return repositories.MessageRepository.Take(sqls.DB(), where...)
 }
 
-func (s *messageService) Find(cnd *sqls.Cnd) []model.Message {
-	return repositories.MessageRepository.Find(sqls.DB(), cnd)
-}
-
 func (s *messageService) FindOne(cnd *sqls.Cnd) *model.Message {
 	return repositories.MessageRepository.FindOne(sqls.DB(), cnd)
 }
@@ -47,6 +43,10 @@ func (s *messageService) FindPageByParams(params *params.QueryParams) (list []mo
 
 func (s *messageService) FindPageByCnd(cnd *sqls.Cnd) (list []model.Message, paging *sqls.Paging) {
 	return repositories.MessageRepository.FindPageByCnd(sqls.DB(), cnd)
+}
+
+func (s *messageService) Find(cnd *sqls.Cnd) []model.Message {
+	return repositories.MessageRepository.Find(sqls.DB(), cnd)
 }
 
 func (s *messageService) Create(t *model.Message) error {
@@ -69,17 +69,18 @@ func (s *messageService) Delete(id int64) {
 	repositories.MessageRepository.Delete(sqls.DB(), id)
 }
 
+// MarkRead 将所有消息标记为已读
+func (s *messageService) MarkRead(userId int64) {
+	sqls.DB().Exec("update t_message set status = ? where user_id = ? and status = ?", msg.StatusHaveRead,
+		userId, msg.StatusUnread)
+}
+
 // GetUnReadCount 获取未读消息数量
 func (s *messageService) GetUnReadCount(userId int64) (count int64) {
 	sqls.DB().Where("user_id = ? and status = ?", userId, msg.StatusUnread).Model(&model.Message{}).Count(&count)
 	return
 }
 
-// MarkRead 将所有消息标记为已读
-func (s *messageService) MarkRead(userId int64) {
-	sqls.DB().Exec("update t_message set status = ? where user_id = ? and status = ?", msg.StatusHaveRead,
-		userId, msg.StatusUnread)
-}
 
 // SendMsg 发送消息
 func (s *messageService) SendMsg(from, to int64, msgType msg.Type,
@@ -124,14 +125,14 @@ func (s *messageService) SendEmailNotice(t *model.Message) {
 		emailTitle = siteTitle + " - 收到话题评论"
 	} else if msgType == msg.TypeCommentReply {
 		emailTitle = siteTitle + " - 收到他人回复"
-	} else if msgType == msg.TypeTopicLike {
-		emailTitle = siteTitle + " - 收到点赞"
 	} else if msgType == msg.TypeTopicFavorite {
 		emailTitle = siteTitle + " - 话题被收藏"
 	} else if msgType == msg.TypeTopicRecommend {
 		emailTitle = siteTitle + " - 话题被设为推荐"
 	} else if msgType == msg.TypeTopicDelete {
 		emailTitle = siteTitle + " - 话题被删除"
+	} else if msgType == msg.TypeTopicLike {
+		emailTitle = siteTitle + " - 收到点赞"
 	} else if msgType == msg.TypeArticleComment {
 		emailTitle = siteTitle + " - 收到文章评论"
 	}
