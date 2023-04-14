@@ -51,6 +51,10 @@ func (s *forbiddenWordService) Count(cnd *sqls.Cnd) int64 {
 }
 
 func (s *forbiddenWordService) Create(t *model.ForbiddenWord) error {
+	if err := repositories.ForbiddenWordRepository.UpdateColumn(sqls.DB(), id, name, value); err != nil {
+		return err
+	}
+	cache.ForbiddenWordCache.Invalidate()
 	if err := repositories.ForbiddenWordRepository.Create(sqls.DB(), t); err != nil {
 		return err
 	}
@@ -70,21 +74,12 @@ func (s *forbiddenWordService) Updates(id int64, columns map[string]interface{})
 	if err := repositories.ForbiddenWordRepository.Updates(sqls.DB(), id, columns); err != nil {
 		return err
 	}
-	cache.ForbiddenWordCache.Invalidate()
-	return nil
-}
-
-func (s *forbiddenWordService) UpdateColumn(id int64, name string, value interface{}) error {
 	if err := repositories.ForbiddenWordRepository.UpdateColumn(sqls.DB(), id, name, value); err != nil {
 		return err
 	}
 	cache.ForbiddenWordCache.Invalidate()
-	return nil
-}
-
-func (s *forbiddenWordService) Delete(id int64) {
-	repositories.ForbiddenWordRepository.Delete(sqls.DB(), id)
 	cache.ForbiddenWordCache.Invalidate()
+	return nil
 }
 
 func (s forbiddenWordService) Check(content string) (hitWords []string) {
@@ -117,4 +112,17 @@ func (s forbiddenWordService) Check(content string) (hitWords []string) {
 		}
 	}
 	return
+}
+
+func (s *forbiddenWordService) UpdateColumn(id int64, name string, value interface{}) error {
+	if err := repositories.ForbiddenWordRepository.UpdateColumn(sqls.DB(), id, name, value); err != nil {
+		return err
+	}
+	cache.ForbiddenWordCache.Invalidate()
+	return nil
+}
+
+func (s *forbiddenWordService) Delete(id int64) {
+	repositories.ForbiddenWordRepository.Delete(sqls.DB(), id)
+	cache.ForbiddenWordCache.Invalidate()
 }
