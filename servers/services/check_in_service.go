@@ -39,13 +39,7 @@ func (s *checkInService) Find(cnd *sqls.Cnd) []model.CheckIn {
 }
 
 
-func (s *checkInService) FindPageByCnd(cnd *sqls.Cnd) (list []model.CheckIn, paging *sqls.Paging) {
-	return repositories.CheckInRepository.FindPageByCnd(sqls.DB(), cnd)
-}
 
-func (s *checkInService) Count(cnd *sqls.Cnd) int64 {
-	return repositories.CheckInRepository.Count(sqls.DB(), cnd)
-}
 
 func (s *checkInService) Create(t *model.CheckIn) error {
 	return repositories.CheckInRepository.Create(sqls.DB(), t)
@@ -59,6 +53,14 @@ func (s *checkInService) FindOne(cnd *sqls.Cnd) *model.CheckIn {
 	return repositories.CheckInRepository.FindOne(sqls.DB(), cnd)
 }
 
+func (s *checkInService) FindPageByCnd(cnd *sqls.Cnd) (list []model.CheckIn, paging *sqls.Paging) {
+	return repositories.CheckInRepository.FindPageByCnd(sqls.DB(), cnd)
+}
+
+func (s *checkInService) Count(cnd *sqls.Cnd) int64 {
+	return repositories.CheckInRepository.Count(sqls.DB(), cnd)
+}
+
 func (s *checkInService) FindPageByParams(params *params.QueryParams) (list []model.CheckIn, paging *sqls.Paging) {
 	return repositories.CheckInRepository.FindPageByParams(sqls.DB(), params)
 }
@@ -67,13 +69,6 @@ func (s *checkInService) Updates(id int64, columns map[string]interface{}) error
 	return repositories.CheckInRepository.Updates(sqls.DB(), id, columns)
 }
 
-func (s *checkInService) UpdateColumn(id int64, name string, value interface{}) error {
-	return repositories.CheckInRepository.UpdateColumn(sqls.DB(), id, name, value)
-}
-
-func (s *checkInService) Delete(id int64) {
-	repositories.CheckInRepository.Delete(sqls.DB(), id)
-}
 
 func (s *checkInService) CheckIn(userId int64) error {
 	s.m.Lock()
@@ -123,6 +118,14 @@ func (s *checkInService) CheckIn(userId int64) error {
 		}
 	}
 	return err
+}
+
+func (s *checkInService) UpdateColumn(id int64, name string, value interface{}) error {
+	return repositories.CheckInRepository.UpdateColumn(sqls.DB(), id, name, value)
+}
+
+func (s *checkInService) Delete(id int64) {
+	repositories.CheckInRepository.Delete(sqls.DB(), id)
 }
 
 func (s *checkInService) GetByUserId(userId int64) *model.CheckIn {
