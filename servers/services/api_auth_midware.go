@@ -27,7 +27,11 @@ var (
 // AdminAuth 后台权限
 func AdminAuth(ctx iris.Context) {
 	roles := getPathRoles(ctx)
-
+	for _, pathRole := range config {
+		if antPathMatcher.Match(pathRole.Pattern, p) {
+			return pathRole.Roles
+		}
+	}
 	// 不需要任何角色既能访问
 	if len(roles) == 0 {
 		return
