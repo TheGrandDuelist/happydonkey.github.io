@@ -53,6 +53,22 @@ func (s *messageService) Create(t *model.Message) error {
 	return repositories.MessageRepository.Create(sqls.DB(), t)
 }
 
+func (s *topicTagService) FindPageByCnd(cnd *sqls.Cnd) (list []model.TopicTag, paging *sqls.Paging) {
+	return repositories.TopicTagRepository.FindPageByCnd(sqls.DB(), cnd)
+}
+
+func (s *topicTagService) Create(t *model.TopicTag) error {
+	return repositories.TopicTagRepository.Create(sqls.DB(), t)
+}
+
+func (s *topicTagService) Update(t *model.TopicTag) error {
+	return repositories.TopicTagRepository.Update(sqls.DB(), t)
+}
+
+func (s *topicTagService) Updates(id int64, columns map[string]interface{}) error {
+	return repositories.TopicTagRepository.Updates(sqls.DB(), id, columns)
+}
+
 func (s *messageService) Update(t *model.Message) error {
 	return repositories.MessageRepository.Update(sqls.DB(), t)
 }
