@@ -68,6 +68,12 @@ func (c *LikeController) GetIsLiked() *web.JsonResult {
 		entityIds      = params.FormValueInt64Array(c.Ctx, "entityIds")
 		likedEntityIds []int64
 	)
+	if user == nil || strs.IsBlank(entityType) || entityId <= 0 {
+		return web.NewEmptyRspBuilder().Put("liked", false).JsonResult()
+	} else {
+		liked := services.UserLikeService.Exists(user.Id, entityType, entityId)
+		return web.NewEmptyRspBuilder().Put("liked", liked).JsonResult()
+	}
 	if user != nil {
 		likedEntityIds = services.UserLikeService.IsLiked(user.Id, entityType, entityIds)
 	}
@@ -85,5 +91,16 @@ func (c *LikeController) GetLiked() *web.JsonResult {
 	} else {
 		liked := services.UserLikeService.Exists(user.Id, entityType, entityId)
 		return web.NewEmptyRspBuilder().Put("liked", liked).JsonResult()
+	}
+	
+	if user == nil {
+		return web.JsonError(errs.NotLogin)
+	}
+	if entityType == constants.EntityTopic {
+		err = services.UserLikeService.TopicUnLike(user.Id, entityId)
+	} else if entityType == constants.EntityArticle {
+		err = services.UserLikeService.ArticleUnLike(user.Id, entityId)
+	} else if entityType == constants.EntityComment {
+		err = services.UserLikeService.CommentUnLike(user.Id, entityId)
 	}
 }
