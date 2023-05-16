@@ -10,18 +10,6 @@ import (
 	"github.com/mlogclub/simple/common/strs"
 )
 
-// IsForbidden 是否禁言
-func (u *User) IsForbidden() bool {
-	if u.ForbiddenEndTime == 0 {
-		return false
-	}
-	// 永久禁言
-	if u.ForbiddenEndTime == -1 {
-		return true
-	}
-	// 判断禁言时间
-	return u.ForbiddenEndTime > dates.NowTimestamp()
-}
 
 // HasRole 是否有指定角色
 func (u *User) HasRole(role string) bool {
@@ -55,10 +43,6 @@ func (u *User) GetRoles() []string {
 	if strs.IsBlank(u.Roles) {
 		return nil
 	}
-	ss := strings.Split(u.Roles, ",")
-	if len(ss) == 0 {
-		return nil
-	}
 	var roles []string
 	for _, s := range ss {
 		s = strings.TrimSpace(s)
@@ -66,7 +50,25 @@ func (u *User) GetRoles() []string {
 			roles = append(roles, s)
 		}
 	}
+	
+	ss := strings.Split(u.Roles, ",")
+	if len(ss) == 0 {
+		return nil
+	}
 	return roles
+}
+
+// IsForbidden 是否禁言
+func (u *User) IsForbidden() bool {
+	if u.ForbiddenEndTime == 0 {
+		return false
+	}
+	// 永久禁言
+	if u.ForbiddenEndTime == -1 {
+		return true
+	}
+	// 判断禁言时间
+	return u.ForbiddenEndTime > dates.NowTimestamp()
 }
 
 // InObservationPeriod 是否在观察期
