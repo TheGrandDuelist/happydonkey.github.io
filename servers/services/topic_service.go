@@ -87,6 +87,26 @@ func (s *topicService) UpdateColumn(id int64, name string, value interface{}) er
 	return nil
 }
 
+func (s *operateLogService) FindPageByParams(params *params.QueryParams) (list []model.OperateLog, paging *sqls.Paging) {
+	return repositories.OperateLogRepository.FindPageByParams(sqls.DB(), params)
+}
+
+func (s *operateLogService) FindPageByCnd(cnd *sqls.Cnd) (list []model.OperateLog, paging *sqls.Paging) {
+	return repositories.OperateLogRepository.FindPageByCnd(sqls.DB(), cnd)
+}
+
+func (s *operateLogService) Updates(id int64, columns map[string]interface{}) error {
+	return repositories.OperateLogRepository.Updates(sqls.DB(), id, columns)
+}
+
+func (s *operateLogService) UpdateColumn(id int64, name string, value interface{}) error {
+	return repositories.OperateLogRepository.UpdateColumn(sqls.DB(), id, name, value)
+}
+
+func (s *operateLogService) Delete(id int64) {
+	repositories.OperateLogRepository.Delete(sqls.DB(), id)
+}
+
 // Delete 删除
 func (s *topicService) Delete(topicId, deleteUserId int64, r *http.Request) error {
 	topic := s.Get(topicId)
