@@ -69,6 +69,26 @@ func (s *topicTagService) Updates(id int64, columns map[string]interface{}) erro
 	return repositories.TopicTagRepository.Updates(sqls.DB(), id, columns)
 }
 
+func (s *userFeedService) Updates(id int64, columns map[string]interface{}) error {
+	return repositories.UserFeedRepository.Updates(sqls.DB(), id, columns)
+}
+
+func (s *userFeedService) Create(t *model.UserFeed) error {
+	return repositories.UserFeedRepository.Create(sqls.DB(), t)
+}
+
+func (s *userFeedService) Update(t *model.UserFeed) error {
+	return repositories.UserFeedRepository.Update(sqls.DB(), t)
+}
+
+func (s *userFeedService) DeleteByUser(userId, authorId int64) {
+	sqls.DB().Where("user_id = ? and author_id = ?", userId, authorId).Delete(model.UserFeed{})
+}
+
+func (s *userFeedService) DeleteByDataId(dataId int64, dataType string) {
+	sqls.DB().Where("data_id = ? and data_type = ?", dataId, dataType).Delete(model.UserFeed{})
+}
+
 func (s *messageService) Update(t *model.Message) error {
 	return repositories.MessageRepository.Update(sqls.DB(), t)
 }
