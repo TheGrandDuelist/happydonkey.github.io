@@ -58,6 +58,74 @@ func (s *operateLogService) Delete(id int64) {
 	repositories.OperateLogRepository.Delete(sqls.DB(), id)
 }
 
+func (s *messageService) SendMsg(from, to int64, msgType msg.Type,
+	title, content, quoteContent string, extraData interface{}) {
+
+	t := &model.Message{
+		FromId:       from,
+		UserId:       to,
+		Title:        title,
+		Content:      content,
+		QuoteContent: quoteContent,
+		Type:         int(msgType),
+		ExtraData:    jsons.ToJsonStr(extraData),
+		Status:       msg.StatusUnread,
+		CreateTime:   dates.NowTimestamp(),
+	}
+	if err := s.Create(t); err != nil {
+		logrus.Error(err)
+	} else {
+		s.SendEmailNotice(t)
+	}
+}
+
+// SendEmailNotice 发送邮件通知
+func (s *messageService) SendEmailNotice(t *model.Message) {
+	msgType := msg.Type(t.Type)
+
+	// 话题被删除不发送邮件提醒
+	if msgType == msg.TypeTopicDelete {
+		return
+	}
+	user := cache.UserCache.Get(t.UserId)
+	if user == nil || len(user.Email.String) == 0 {
+		return
+	}
+	var (
+		siteTitle  = cache.SysConfigCache.GetValue(constants.SysConfigSiteTitle)
+		emailTitle = siteTitle + " - 新消息提醒"
+	)
+
+	if msgType == msg.TypeTopicComment {
+		emailTitle = siteTitle + " - 收到话题评论"
+	} else if msgType == msg.TypeCommentReply {
+		emailTitle = siteTitle + " - 收到他人回复"
+	} else if msgType == msg.TypeTopicFavorite {
+		emailTitle = siteTitle + " - 话题被收藏"
+	} else if msgType == msg.TypeTopicRecommend {
+		emailTitle = siteTitle + " - 话题被设为推荐"
+	} else if msgType == msg.TypeTopicDelete {
+		emailTitle = siteTitle + " - 话题被删除"
+	} else if msgType == msg.TypeTopicLike {
+		emailTitle = siteTitle + " - 收到点赞"
+	} else if msgType == msg.TypeArticleComment {
+		emailTitle = siteTitle + " - 收到文章评论"
+	}
+
+	var from *model.User
+	if t.FromId > 0 {
+		from = cache.UserCache.Get(t.FromId)
+	}
+	err := email.SendTemplateEmail(from, user.Email.String, emailTitle, emailTitle, t.Content,
+		t.QuoteContent, &model.ActionLink{
+			Title: "点击查看详情",
+			Url:   bbsurls.AbsUrl("/user/messages"),
+		})
+	if err != nil {
+		logrus.Error(err)
+	}
+}
+
 func (s *operateLogService) AddOperateLog(userId int64, opType, dataType string, dataId int64,
 	description string, r *http.Request) {
 
