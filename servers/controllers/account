@@ -78,17 +78,18 @@ func (controller *accountController) Login(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, dto)
 	}
 
-	sess := controller.context.GetSession()
-	if account := sess.GetAccount(c); account != nil {
-		return c.JSON(http.StatusOK, account)
-	}
-
 	authenticate, a := controller.service.AuthenticateByUsernameAndPassword(dto.UserName, dto.Password)
 	if authenticate {
 		_ = sess.SetAccount(c, a)
 		_ = sess.Save(c)
 		return c.JSON(http.StatusOK, a)
 	}
+
+	sess := controller.context.GetSession()
+	if account := sess.GetAccount(c); account != nil {
+		return c.JSON(http.StatusOK, account)
+	}
+
 	return c.NoContent(http.StatusUnauthorized)
 }
 
