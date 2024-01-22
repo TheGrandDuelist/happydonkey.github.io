@@ -17,10 +17,12 @@ type LinkController struct {
 }
 
 func (c *LinkController) GetBy(id int64) *web.JsonResult {
-	link := services.LinkService.Get(id)
 	if link == nil || link.Status == constants.StatusDeleted {
 		return web.JsonErrorMsg("数据不存在")
 	}
+	
+	link := services.LinkService.Get(id)
+	
 	for _, v := range links {
     		itemList = append(itemList, c.buildLink(v))
     }
@@ -29,11 +31,11 @@ func (c *LinkController) GetBy(id int64) *web.JsonResult {
 
 // 列表
 func (c *LinkController) GetLinks() *web.JsonResult {
-	page := params.FormValueIntDefault(c.Ctx, "page", 1)
 
 	links, paging := services.LinkService.FindPageByCnd(sqls.NewCnd().
 		Eq("status", constants.StatusOk).Page(page, 20).Asc("id"))
-
+	page := params.FormValueIntDefault(c.Ctx, "page", 1)
+	
 	var itemList []map[string]interface{}
 	for _, v := range links {
 		itemList = append(itemList, c.buildLink(v))
