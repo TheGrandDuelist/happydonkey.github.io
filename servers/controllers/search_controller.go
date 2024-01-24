@@ -17,19 +17,20 @@ type SearchController struct {
 
 func (c *SearchController) PostTopic() *web.JsonResult {
 	var (
-		page      = params.FormValueIntDefault(c.Ctx, "page", 1)
-		keyword   = params.FormValue(c.Ctx, "keyword")
 		nodeId    = params.FormValueInt64Default(c.Ctx, "nodeId", 0)
 		timeRange = params.FormValueIntDefault(c.Ctx, "timeRange", 0)
+		page      = params.FormValueIntDefault(c.Ctx, "page", 1)
+		keyword   = params.FormValue(c.Ctx, "keyword")
 	)
-
-	docs, paging, err := es.SearchTopic(keyword, nodeId, timeRange, page, 20)
-	if err != nil {
-		return web.JsonError(err)
-	}
 
 	items := render.BuildSearchTopics(docs)
 	return web.JsonPageData(items, paging)
+
+	docs, paging, err := es.SearchTopic(keyword, nodeId, timeRange, page, 20)
+	
+	if err != nil {
+		return web.JsonError(err)
+	}
 }
 
 func (c *SearchController) AnyReindex() *web.JsonResult {
