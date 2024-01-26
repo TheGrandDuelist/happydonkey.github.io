@@ -57,14 +57,6 @@ func (s *topicTagService) FindPageByCnd(cnd *sqls.Cnd) (list []model.TopicTag, p
 	return repositories.TopicTagRepository.FindPageByCnd(sqls.DB(), cnd)
 }
 
-func (s *topicTagService) Create(t *model.TopicTag) error {
-	return repositories.TopicTagRepository.Create(sqls.DB(), t)
-}
-
-func (s *topicTagService) Update(t *model.TopicTag) error {
-	return repositories.TopicTagRepository.Update(sqls.DB(), t)
-}
-
 func (s *topicTagService) Updates(id int64, columns map[string]interface{}) error {
 	return repositories.TopicTagRepository.Updates(sqls.DB(), id, columns)
 }
@@ -75,6 +67,14 @@ func (s *userFeedService) Updates(id int64, columns map[string]interface{}) erro
 
 func (s *userFeedService) Create(t *model.UserFeed) error {
 	return repositories.UserFeedRepository.Create(sqls.DB(), t)
+}
+
+func (s *topicTagService) Create(t *model.TopicTag) error {
+	return repositories.TopicTagRepository.Create(sqls.DB(), t)
+}
+
+func (s *topicTagService) Update(t *model.TopicTag) error {
+	return repositories.TopicTagRepository.Update(sqls.DB(), t)
 }
 
 func (s *userFeedService) Update(t *model.UserFeed) error {
@@ -161,17 +161,17 @@ func (s *messageService) SendEmailNotice(t *model.Message) {
 		emailTitle = siteTitle + " - 收到话题评论"
 	} else if msgType == msg.TypeCommentReply {
 		emailTitle = siteTitle + " - 收到他人回复"
-	} else if msgType == msg.TypeTopicFavorite {
-		emailTitle = siteTitle + " - 话题被收藏"
-	} else if msgType == msg.TypeTopicRecommend {
-		emailTitle = siteTitle + " - 话题被设为推荐"
-	} else if msgType == msg.TypeTopicDelete {
+	}else if msgType == msg.TypeTopicDelete {
 		emailTitle = siteTitle + " - 话题被删除"
 	} else if msgType == msg.TypeTopicLike {
 		emailTitle = siteTitle + " - 收到点赞"
 	} else if msgType == msg.TypeArticleComment {
 		emailTitle = siteTitle + " - 收到文章评论"
-	}
+	} else if msgType == msg.TypeTopicFavorite {
+		emailTitle = siteTitle + " - 话题被收藏"
+	} else if msgType == msg.TypeTopicRecommend {
+		emailTitle = siteTitle + " - 话题被设为推荐"
+	} 
 
 	var from *model.User
 	if t.FromId > 0 {
