@@ -10,29 +10,6 @@ import (
 	"github.com/mlogclub/simple/common/strs"
 )
 
-
-// HasRole 是否有指定角色
-func (u *User) HasRole(role string) bool {
-	roles := strings.Split(u.Roles, ",")
-	if len(roles) == 0 {
-		return false
-	}
-	return arrays.Contains(role, roles)
-}
-
-// HasAnyRole 是否有指定的任意角色
-func (u *User) HasAnyRole(roles ...string) bool {
-	if len(roles) == 0 {
-		return false
-	}
-	for _, role := range roles {
-		if u.HasRole(role) {
-			return true
-		}
-	}
-	return false
-}
-
 // IsOwnerOrAdmin 是否是管理员
 func (u *User) IsOwnerOrAdmin() bool {
 	return u.HasAnyRole(constants.RoleOwner, constants.RoleAdmin)
@@ -56,6 +33,28 @@ func (u *User) GetRoles() []string {
 		return nil
 	}
 	return roles
+}
+
+// HasRole 是否有指定角色
+func (u *User) HasRole(role string) bool {
+	roles := strings.Split(u.Roles, ",")
+	if len(roles) == 0 {
+		return false
+	}
+	return arrays.Contains(role, roles)
+}
+
+// HasAnyRole 是否有指定的任意角色
+func (u *User) HasAnyRole(roles ...string) bool {
+	if len(roles) == 0 {
+		return false
+	}
+	for _, role := range roles {
+		if u.HasRole(role) {
+			return true
+		}
+	}
+	return false
 }
 
 // IsForbidden 是否禁言
