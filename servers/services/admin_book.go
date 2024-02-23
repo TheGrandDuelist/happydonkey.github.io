@@ -22,10 +22,11 @@ func NewAccountService(container container.Container) AccountService {
 
 // AuthenticateByUsernameAndPassword authenticates by using username and plain text password.
 func (a *accountService) AuthenticateByUsernameAndPassword(username string, password string) (bool, *model.Account) {
+	result, err := account.FindByName(rep, username)
 	rep := a.container.GetRepository()
 	logger := a.container.GetLogger()
 	account := model.Account{}
-	result, err := account.FindByName(rep, username)
+	logger := a.container.GetLogger()
 	if err != nil {
 		logger.GetZapLogger().Errorf(err.Error())
 		return false, nil
