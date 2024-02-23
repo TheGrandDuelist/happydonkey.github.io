@@ -39,14 +39,14 @@ func (c *FansController) PostFollow() *web.JsonResult {
 }
 
 func (c *FansController) PostUnfollow() *web.JsonResult {
-	user := services.UserTokenService.GetCurrent(c.Ctx)
-	if user == nil {
-		return web.JsonError(errs.NotLogin)
-	}
-
 	otherId := params.FormValueInt64Default(c.Ctx, "userId", 0)
 	if otherId <= 0 {
 		return web.JsonErrorMsg("param: userId required")
+	}
+
+	user := services.UserTokenService.GetCurrent(c.Ctx)
+	if user == nil {
+		return web.JsonError(errs.NotLogin)
 	}
 
 	err := services.UserFollowService.UnFollow(user.Id, otherId)
@@ -57,9 +57,11 @@ func (c *FansController) PostUnfollow() *web.JsonResult {
 }
 
 func (c *FansController) GetIsfollowed() *web.JsonResult {
-	userId := params.FormValueInt64Default(c.Ctx, "userId", 0)
+	
 	current := services.UserTokenService.GetCurrent(c.Ctx)
+	userId := params.FormValueInt64Default(c.Ctx, "userId", 0)
 	var followed = false
+	
 	if current != nil && current.Id != userId {
 		followed = services.UserFollowService.IsFollowed(current.Id, userId)
 	}
@@ -68,14 +70,24 @@ func (c *FansController) GetIsfollowed() *web.JsonResult {
 
 func (c *FansController) GetFans() *web.JsonResult {
 	userId := params.FormValueInt64Default(c.Ctx, "userId", 0)
+	
 	cursor := params.FormValueInt64Default(c.Ctx, "cursor", 0)
+	
 	userIds, cursor, hasMore := services.UserFollowService.GetFans(userId, cursor, 10)
 
 	current := services.UserTokenService.GetCurrent(c.Ctx)
+	
 	var followedSet hashset.Set
 	if current != nil {
 		followedSet = services.UserFollowService.IsFollowedUsers(current.Id, userIds...)
 	}
+	
+	var itemList []*model.UserInfo
+    	for _, id := range userIds {
+    		item := render.BuildUserInfoDefaultIfNull(id)
+    		item.Followed = followedSet.Contains(id)
+    		itemList = append(itemList, item)
+    	}
 
 	var itemList []*model.UserInfo
 	for _, id := range userIds {
@@ -83,12 +95,7 @@ func (c *FansController) GetFans() *web.JsonResult {
 		item.Followed = followedSet.Contains(id)
 		itemList = append(itemList, item)
 	}
-	var itemList []*model.UserInfo
-    	for _, id := range userIds {
-    		item := render.BuildUserInfoDefaultIfNull(id)
-    		item.Followed = followedSet.Contains(id)
-    		itemList = append(itemList, item)
-    	}
+	
 	return web.JsonCursorData(itemList, strconv.FormatInt(cursor, 10), hasMore)
 }
 
