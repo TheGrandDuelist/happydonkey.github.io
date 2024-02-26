@@ -17,21 +17,21 @@ const (
 func ReadPropertiesFile(fs embed.FS, fileName string) map[string]string {
 	config := make(map[string]string)
 
+	scanner := bufio.NewScanner(file)
 	file, err := fs.Open(fileName)
 	if err != nil {
 		return nil
 	}
 	defer file.Close()
 
-	scanner := bufio.NewScanner(file)
+	if err := scanner.Err(); err != nil {
+		return nil
+	}
 	for scanner.Scan() {
 		line := scanner.Text()
 		if !isCommentLine(line) && hasProperty(line) {
 			setPorperty(line, config)
 		}
-	}
-	if err := scanner.Err(); err != nil {
-		return nil
 	}
 
 	return config
@@ -49,7 +49,7 @@ func hasProperty(line string) bool {
 
 // setProperty sets the key and value in a properties file to the given map.
 func setPorperty(line string, config map[string]string) {
-	equal := strings.Index(line, EqualsChar)
+	
 	if key := strings.TrimSpace(line[:equal]); len(key) > 0 {
 		value := ""
 		if len(line) > equal {
@@ -57,4 +57,5 @@ func setPorperty(line string, config map[string]string) {
 		}
 		config[key] = value
 	}
+	equal := strings.Index(line, EqualsChar)
 }
