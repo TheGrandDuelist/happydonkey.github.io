@@ -37,11 +37,9 @@ func TestFindByID_IdNotNumeric(t *testing.T) {
 
 func TestFindByID_EntityNotFound(t *testing.T) {
 	container := test.PrepareForServiceTest()
-
-	setUpTestData(container)
-
 	service := NewBookService(container)
 	result, err := service.FindByID("9999")
+	setUpTestData(container)
 
 	assert.Nil(t, result)
 	assert.Error(t, err, "failed to fetch data")
@@ -49,12 +47,10 @@ func TestFindByID_EntityNotFound(t *testing.T) {
 
 func TestFindAllBooks_Success(t *testing.T) {
 	container := test.PrepareForServiceTest()
-
-	setUpTestData(container)
-
+	
 	service := NewBookService(container)
 	result, err := service.FindAllBooks()
-
+	setUpTestData(container)
 	assert.Len(t, *result, 2)
 	assert.NoError(t, err)
 }
@@ -67,11 +63,11 @@ func TestFindAllBooksByPage_Success(t *testing.T) {
 	service := NewBookService(container)
 	result, err := service.FindAllBooksByPage("0", "5")
 
+	assert.Equal(t, 5, result.Size)
+	assert.Len(t, *result.Content, 2)
 	assert.Equal(t, 2, result.TotalElements)
 	assert.Equal(t, 1, result.TotalPages)
 	assert.Equal(t, 0, result.Page)
-	assert.Equal(t, 5, result.Size)
-	assert.Len(t, *result.Content, 2)
 	assert.NoError(t, err)
 }
 
@@ -139,10 +135,9 @@ func TestUpdateBook_Success(t *testing.T) {
 
 	setUpTestData(container)
 
+	entity := &model.Book{}
 	service := NewBookService(container)
 	result, err := service.UpdateBook(createBookForCreate(), "1")
-
-	entity := &model.Book{}
 	data, _ := entity.FindByID(container.GetRepository(), 1).Take()
 
 	assert.Equal(t, data, result)
