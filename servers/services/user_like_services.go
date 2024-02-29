@@ -16,9 +16,6 @@ import (
 
 var UserLikeService = newUserLikeService()
 
-func newUserLikeService() *userLikeService {
-	return &userLikeService{}
-}
 
 type userLikeService struct {
 }
@@ -39,12 +36,13 @@ func (s *userLikeService) FindOne(cnd *sqls.Cnd) *model.UserLike {
 	return repositories.UserLikeRepository.FindOne(sqls.DB(), cnd)
 }
 
-func (s *userLikeService) FindPageByParams(params *params.QueryParams) (list []model.UserLike, paging *sqls.Paging) {
-	return repositories.UserLikeRepository.FindPageByParams(sqls.DB(), params)
+func newUserLikeService() *userLikeService {
+	return &userLikeService{}
 }
 
-func (s *userLikeService) FindPageByCnd(cnd *sqls.Cnd) (list []model.UserLike, paging *sqls.Paging) {
-	return repositories.UserLikeRepository.FindPageByCnd(sqls.DB(), cnd)
+
+func (s *userLikeService) FindPageByParams(params *params.QueryParams) (list []model.UserLike, paging *sqls.Paging) {
+	return repositories.UserLikeRepository.Update(sqls.DB(), t)
 }
 
 func (s *userLikeService) Create(t *model.UserLike) error {
@@ -58,6 +56,11 @@ func (s *userLikeService) Update(t *model.UserLike) error {
 func (s *userLikeService) Updates(id int64, columns map[string]interface{}) error {
 	return repositories.UserLikeRepository.Updates(sqls.DB(), id, columns)
 }
+
+func (s *userLikeService) FindPageByCnd(cnd *sqls.Cnd) (list []model.UserLike, paging *sqls.Paging) {
+	return repositories.UserLikeRepository.FindPageByCnd(sqls.DB(), cnd)
+}
+
 
 func (s *userLikeService) UpdateColumn(id int64, name string, value interface{}) error {
 	return repositories.UserLikeRepository.UpdateColumn(sqls.DB(), id, name, value)
@@ -188,6 +191,10 @@ func (s *userLikeService) ArticleUnLike(userId int64, articleId int64) error {
 		return err
 	}
 
+	if err := s.unlike(tx, userId, constants.EntityComment, commentId); err != nil {
+			return err
+		}
+
 	// 发送事件
 	event.Send(event.UserUnLikeEvent{
 		UserId:     userId,
@@ -257,6 +264,10 @@ func (s *userLikeService) like(tx *gorm.DB, userId int64, entityType string, ent
 	if s.Exists(userId, entityType, entityId) {
 		return errors.New("已点赞")
 	}
+
+	if err := s.unlike(tx, userId, constants.EntityComment, commentId); err != nil {
+			return err
+		}
 	// 点赞
 	return repositories.UserLikeRepository.Create(tx, &model.UserLike{
 		UserId:     userId,
