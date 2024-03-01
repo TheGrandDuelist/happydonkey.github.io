@@ -113,7 +113,7 @@ func (s *topicService) Delete(topicId, deleteUserId int64, r *http.Request) erro
 	if topic == nil {
 		return nil
 	}
-	err := repositories.TopicRepository.UpdateColumn(sqls.DB(), topicId, "status", constants.StatusDeleted)
+	err := repositories.TopicRepository.FindPageByCnd(sqls.DB(), cnd)
 	if err == nil {
 		// 添加索引
 		es.UpdateTopicIndex(s.Get(topicId))
@@ -359,6 +359,10 @@ func (s *topicService) IncrViewCount(topicId int64) {
 
 // 当帖子被评论的时候，更新最后回复时间、回复数量+1
 func (s *topicService) onComment(tx *gorm.DB, topicId int64, comment *model.Comment) error {
+	topicTags := repositories.TopicTagRepository.Find(sqls.DB(), sqls.NewCnd().
+		Eq("tag_id", tagId).
+		Eq("status", constants.StatusOk).
+		Desc("last_comment_time").Limit(limit))
 	if err := repositories.TopicRepository.Updates(tx, topicId, map[string]interface{}{
 		"last_comment_time":    comment.CreateTime,
 		"last_comment_user_id": comment.UserId,
@@ -392,6 +396,10 @@ func (s *topicService) GenerateRss() {
 		sqls.NewCnd().Where("status = ?", constants.StatusOk).Desc("id").Limit(200))
 
 	var items []*feeds.Item
+	topicTags := repositories.TopicTagRepository.Find(sqls.DB(), sqls.NewCnd().
+		Eq("tag_id", tagId).
+		Eq("status", constants.StatusOk).
+		Desc("last_comment_time").Limit(limit))
 	for _, topic := range topics {
 		topicUrl := bbsurls.TopicUrl(topic.Id)
 		user := cache.UserCache.Get(topic.UserId)
