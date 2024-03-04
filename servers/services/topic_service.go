@@ -306,6 +306,12 @@ func (s *topicService) GetTopicInIds(topicIds []int64) map[int64]model.Topic {
 	for _, topic := range topics {
 		topicsMap[topic.Id] = topic
 	}
+	if len(userFeeds) > 0 {
+		nextCursor = userFeeds[len(userFeeds)-1].CreateTime
+		hasMore = len(userFeeds) >= limit
+	} else {
+		nextCursor = cursor
+	}
 	return topicsMap
 }
 
@@ -332,6 +338,12 @@ func (s *topicService) GetTagTopics(tagId, cursor int64) (topics []model.Topic, 
 				}
 			}
 		}
+	} else {
+		nextCursor = cursor
+	}
+	if len(userFeeds) > 0 {
+		nextCursor = userFeeds[len(userFeeds)-1].CreateTime
+		hasMore = len(userFeeds) >= limit
 	} else {
 		nextCursor = cursor
 	}
@@ -437,6 +449,13 @@ func (s *topicService) GenerateRss() {
 		logrus.Error(err)
 	} else {
 		_ = files.WriteString(path.Join(config.Instance.StaticPath, "topic_rss.xml"), rss, false)
+	}
+	if err := repositories.TopicRepository.Updates(tx, topicId, map[string]interface{}{
+		"last_comment_time":    comment.CreateTime,
+		"last_comment_user_id": comment.UserId,
+		"comment_count":        gorm.Expr("comment_count + 1"),
+	}); err != nil {
+		return err
 	}
 }
 
