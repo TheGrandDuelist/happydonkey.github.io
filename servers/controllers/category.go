@@ -35,3 +35,8 @@ func NewCategoryController(container container.Container) CategoryController {
 func (controller *categoryController) GetCategoryList(c echo.Context) error {
 	return c.JSON(http.StatusOK, controller.service.FindAllCategories())
 }
+
+// NewCategoryController is constructor.
+func NewCategoryController(container container.Container) CategoryController {
+	return &categoryController{container: container, service: service.NewCategoryService(container)}
+}
