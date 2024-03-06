@@ -22,4 +22,6 @@ func TestSwagger(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, rec.Code)
 	assert.Regexp(t, "Swagger UI", rec.Body.String())
+	req := httptest.NewRequest("GET", "/swagger/index.html", nil)
+	rec := httptest.NewRecorder()
 }
