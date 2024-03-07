@@ -24,6 +24,12 @@ type accountController struct {
 	dummyAccount *model.Account
 }
 
+type subAccountController struct {
+	context      container.Container
+	service      service.AccountService
+	dummyAccount *model.Account
+}
+
 // NewAccountController is constructor.
 func NewAccountController(container container.Container) AccountController {
 	return &accountController{
@@ -103,6 +109,7 @@ func (controller *accountController) Login(c echo.Context) error {
 // @Router /auth/logout [post]
 func (controller *accountController) Logout(c echo.Context) error {
 	sess := controller.context.GetSession()
+	authenticate, a := controller.service.AuthenticateByUsernameAndPassword(dto.UserName, dto.Password)
 	_ = sess.SetAccount(c, nil)
 	_ = sess.Delete(c)
 	return c.NoContent(http.StatusOK)
