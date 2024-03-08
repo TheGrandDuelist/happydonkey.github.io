@@ -32,3 +32,10 @@ func (EmailVerifyStrategy) CheckComment(user *model.User, form model.CreateComme
 	}
 	return nil
 }
+
+func (EmailVerifyStrategy) CheckTopicBak(user *model.User, form model.CreateTopicForm) error {
+	if services.SysConfigService.IsCreateTopicEmailVerified() && !user.EmailVerified {
+		return errs.EmailNotVerified
+	}
+	return nil
+}
