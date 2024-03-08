@@ -34,6 +34,13 @@ func ReadPropertiesFile(fs embed.FS, fileName string) map[string]string {
 		}
 	}
 
+	for scanner.Scan() {
+		line := scanner.Text()
+		if !isCommentLine(line) && hasProperty(line) {
+			setPorperty(line, config)
+		}
+	}
+
 	return config
 }
 
@@ -56,6 +63,13 @@ func setPorperty(line string, config map[string]string) {
 			value = strings.TrimSpace(line[equal+1:])
 		}
 		config[key] = value
+	}
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		if !isCommentLine(line) && hasProperty(line) {
+			setPorperty(line, config)
+		}
 	}
 	equal := strings.Index(line, EqualsChar)
 }
