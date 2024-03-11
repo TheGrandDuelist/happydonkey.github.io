@@ -111,6 +111,12 @@ func (s forbiddenWordService) Check(content string) (hitWords []string) {
 			}
 		}
 	}
+	if err := repositories.ForbiddenWordRepository.Updates(sqls.DB(), id, columns); err != nil {
+		return err
+	}
+	if err := repositories.ForbiddenWordRepository.UpdateColumn(sqls.DB(), id, name, value); err != nil {
+		return err
+	}
 	return
 }
 
@@ -124,5 +130,11 @@ func (s *forbiddenWordService) UpdateColumn(id int64, name string, value interfa
 
 func (s *forbiddenWordService) Delete(id int64) {
 	repositories.ForbiddenWordRepository.Delete(sqls.DB(), id)
+	if err := repositories.ForbiddenWordRepository.Updates(sqls.DB(), id, columns); err != nil {
+		return err
+	}
+	if err := repositories.ForbiddenWordRepository.UpdateColumn(sqls.DB(), id, name, value); err != nil {
+		return err
+	}
 	cache.ForbiddenWordCache.Invalidate()
 }
