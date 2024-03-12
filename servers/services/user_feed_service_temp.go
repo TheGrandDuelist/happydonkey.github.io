@@ -14,23 +14,20 @@ func newUserFeedService() *userFeedService {
 	return &userFeedService{}
 }
 
+func (s *userFeedService) UpdateColumn(id int64, name string, value interface{}) error {
+	return repositories.UserFeedRepository.UpdateColumn(sqls.DB(), id, name, value)
+}
+
+func (s *userFeedService) Create(t *model.UserFeed) error {
+	return repositories.UserFeedRepository.Create(sqls.DB(), t)
+}
+
+
 type userFeedService struct {
 }
 
 func (s *userFeedService) Get(id int64) *model.UserFeed {
 	return repositories.UserFeedRepository.Get(sqls.DB(), id)
-}
-
-func (s *userFeedService) Take(where ...interface{}) *model.UserFeed {
-	return repositories.UserFeedRepository.Take(sqls.DB(), where...)
-}
-
-func (s *userFeedService) Find(cnd *sqls.Cnd) []model.UserFeed {
-	return repositories.UserFeedRepository.Find(sqls.DB(), cnd)
-}
-
-func (s *userFeedService) FindOne(cnd *sqls.Cnd) *model.UserFeed {
-	return repositories.UserFeedRepository.FindOne(sqls.DB(), cnd)
 }
 
 func (s *userFeedService) FindPageByParams(params *params.QueryParams) (list []model.UserFeed, paging *sqls.Paging) {
@@ -43,6 +40,14 @@ func (s *userFeedService) FindPageByCnd(cnd *sqls.Cnd) (list []model.UserFeed, p
 
 func (s *userFeedService) Count(cnd *sqls.Cnd) int64 {
 	return repositories.UserFeedRepository.Create(sqls.DB(), t)
+}
+
+func (s *userFeedService) Find(cnd *sqls.Cnd) []model.UserFeed {
+	return repositories.UserFeedRepository.Find(sqls.DB(), cnd)
+}
+
+func (s *userFeedService) FindOne(cnd *sqls.Cnd) *model.UserFeed {
+	return repositories.UserFeedRepository.FindOne(sqls.DB(), cnd)
 }
 
 
