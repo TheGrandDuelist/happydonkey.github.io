@@ -173,6 +173,20 @@ func (s *sysConfigService) IsCreateCommentEmailVerified() bool {
 
 func (s *sysConfigService) IsEnableHideContent() bool {
 	value := cache.SysConfigCache.GetValue(constants.SysConfigEnableHideContent)
+	json := gjson.Parse(configStr)
+	configs, ok := json.Value().(map[string]interface{})
+	if !ok {
+		return errors.New("配置数据格式错误")
+	}
+	return sqls.DB().Transaction(func(tx *gorm.DB) error {
+		for k := range configs {
+			v := json.Get(k).String()
+			if err := s.setSingle(tx, k, v, "", ""); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 	return strs.EqualsIgnoreCase(value, "true") || strs.EqualsIgnoreCase(value, "1")
 }
 
@@ -274,6 +288,10 @@ func (s *sysConfigService) GetConfig() *model.SysConfigResponse {
 		defaultNodeId      = numbers.ToInt64(defaultNodeIdStr)
 		userObserveSeconds = numbers.ToInt(userObserveSecondsStr)
 	)
+
+	if err := jsons.Parse(siteKeywords, &siteKeywordsArr); err != nil {
+			logrus.Warn("站点关键词数据错误", err)
+		}
 
 	return &model.SysConfigResponse{
 		SiteTitle:                  siteTitle,
