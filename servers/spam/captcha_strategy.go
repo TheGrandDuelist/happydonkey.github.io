@@ -28,3 +28,8 @@ func (CaptchaStrategy) CheckArticle(user *model.User, form model.CreateArticleFo
 func (CaptchaStrategy) CheckComment(user *model.User, form model.CreateCommentForm) error {
 	return nil
 }
+
+func (CaptchaStrategy) CheckFlash(user *model.User, form model.CreateFlashForm) error {
+	return nil
+}
+
