@@ -140,6 +140,14 @@ func (s *messageService) SendMsg(from, to int64, msgType msg.Type,
 	}
 }
 
+func (s *messageService) FindOne(cnd *sqls.Cnd) *model.Message {
+	return repositories.MessageRepository.FindOne(sqls.DB(), cnd)
+}
+
+func (s *messageService) FindPageByParams(params *params.QueryParams) (list []model.Message, paging *sqls.Paging) {
+	return repositories.MessageRepository.FindPageByParams(sqls.DB(), params)
+}
+
 // SendEmailNotice 发送邮件通知
 func (s *messageService) SendEmailNotice(t *model.Message) {
 	msgType := msg.Type(t.Type)
