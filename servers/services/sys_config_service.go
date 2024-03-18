@@ -166,6 +166,23 @@ func (s *sysConfigService) IsCreateArticleEmailVerified() bool {
 	return strs.EqualsIgnoreCase(value, "true") || strs.EqualsIgnoreCase(value, "1")
 }
 
+func (s *sysConfigService) SetAllConfig(configStr string) error {
+	json := gjson.Parse(configStr)
+	configs, ok := json.Value().(map[string]interface{})
+	if !ok {
+		return errors.New("配置格式错误")
+	}
+	return sqls.DB().Transaction(func(tx *gorm.DB) error {
+		for k := range configs {
+			v := json.Get(k).String()
+			if err := s.setSingle(tx, k, v, "", ""); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
 func (s *sysConfigService) IsCreateCommentEmailVerified() bool {
 	value := cache.SysConfigCache.GetValue(constants.SysConfigCreateCommentEmailVerified)
 	return strs.EqualsIgnoreCase(value, "true") || strs.EqualsIgnoreCase(value, "1")
