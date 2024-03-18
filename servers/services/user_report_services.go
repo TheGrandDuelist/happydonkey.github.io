@@ -64,3 +64,11 @@ func (s *userReportService) UpdateColumn(id int64, name string, value interface{
 func (s *userReportService) Delete(id int64) {
 	repositories.UserReportRepository.Delete(sqls.DB(), id)
 }
+
+func (s *userReportService) CreateArticle(t *model.UserReport) error {
+	return repositories.UserReportRepository.CreateArticle(sqls.DB(), t)
+}
+
+func (s *userReportService) UpdateArticle(t *model.UserReport) error {
+	return repositories.UserReportRepository.UpdateArticle(sqls.DB(), t)
+}
