@@ -45,3 +45,14 @@ func addCronFunc(c *cron.Cron, sepc string, cmd func()) {
 		logrus.Error(err)
 	}
 }
+
+func addCronFuncTest(c *cron.Cron, sepc string, cmd func()) {
+	// Generate sitemap
+	addCronFunc(c, "0 0 4 ? * *", func() {
+		sitemap.Generate()
+	})
+	err := c.AddFunc(sepc, cmd)
+	if err != nil {
+		logrus.Error(err)
+	}
+}
