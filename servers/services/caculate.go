@@ -49,18 +49,6 @@ func (s *checkInService) Update(t *model.CheckIn) error {
 	return repositories.CheckInRepository.Update(sqls.DB(), t)
 }
 
-func (s *checkInService) FindOne(cnd *sqls.Cnd) *model.CheckIn {
-	return repositories.CheckInRepository.FindOne(sqls.DB(), cnd)
-}
-
-func (s *checkInService) FindPageByCnd(cnd *sqls.Cnd) (list []model.CheckIn, paging *sqls.Paging) {
-	return repositories.CheckInRepository.FindPageByCnd(sqls.DB(), cnd)
-}
-
-func (s *checkInService) Count(cnd *sqls.Cnd) int64 {
-	return repositories.CheckInRepository.Count(sqls.DB(), cnd)
-}
-
 func (s *checkInService) FindPageByParams(params *params.QueryParams) (list []model.CheckIn, paging *sqls.Paging) {
 	return repositories.CheckInRepository.FindPageByParams(sqls.DB(), params)
 }
@@ -126,6 +114,18 @@ func (s *checkInService) UpdateColumn(id int64, name string, value interface{}) 
 
 func (s *checkInService) Delete(id int64) {
 	repositories.CheckInRepository.Delete(sqls.DB(), id)
+}
+
+func (s *checkInService) FindOne(cnd *sqls.Cnd) *model.CheckIn {
+	return repositories.CheckInRepository.FindOne(sqls.DB(), cnd)
+}
+
+func (s *checkInService) FindPageByCnd(cnd *sqls.Cnd) (list []model.CheckIn, paging *sqls.Paging) {
+	return repositories.CheckInRepository.FindPageByCnd(sqls.DB(), cnd)
+}
+
+func (s *checkInService) Count(cnd *sqls.Cnd) int64 {
+	return repositories.CheckInRepository.Count(sqls.DB(), cnd)
 }
 
 func (s *checkInService) GetByUserId(userId int64) *model.CheckIn {
