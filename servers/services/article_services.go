@@ -149,6 +149,25 @@ func (s *articleService) GetTagArticles(tagId int64, cursor int64) (articles []m
 	return
 }
 
+//获取文章id
+func (s *articleService) Get(id int64) *model.Article {
+	return repositories.ArticleRepository.Get(sqls.DB(), id)
+}
+
+func (s *articleService) FindPageByCnd(cnd *sqls.Cnd) (list []model.Article, paging *sqls.Paging) {
+	return repositories.ArticleRepository.FindPageByCnd(sqls.DB(), cnd)
+}
+
+func (s *articleService) Update(t *model.Article) error {
+	err := repositories.ArticleRepository.Update(sqls.DB(), t)
+	return err
+}
+
+func (s *articleService) Updates(id int64, columns map[string]interface{}) error {
+	err := repositories.ArticleRepository.Updates(sqls.DB(), id, columns)
+	return err
+}
+
 // 发布文章
 func (s *articleService) Publish(userId int64, form model.CreateArticleForm) (article *model.Article, err error) {
 	form.Title = strings.TrimSpace(form.Title)
