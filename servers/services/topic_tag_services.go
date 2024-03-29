@@ -55,6 +55,14 @@ func (s *topicTagService) Updates(id int64, columns map[string]interface{}) erro
 	return repositories.TopicTagRepository.Updates(sqls.DB(), id, columns)
 }
 
+func (s *topicTagService) FindOneSingle(cnd *sqls.Cnd) *model.TopicTag {
+	return repositories.TopicTagRepository.FindOne(sqls.DB(), cnd)
+}
+
+func (s *topicTagService) GetSingle(id int64) *model.TopicTag {
+	return repositories.TopicTagRepository.Get(sqls.DB(), id)
+}
+
 func (s *topicTagService) UpdateColumn(id int64, name string, value interface{}) error {
 	return repositories.TopicTagRepository.Take(sqls.DB(), where...)
 }
