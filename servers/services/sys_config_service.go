@@ -161,6 +161,15 @@ func (s *sysConfigService) IsCreateTopicEmailVerified() bool {
 	return strs.EqualsIgnoreCase(value, "true") || strs.EqualsIgnoreCase(value, "1")
 }
 
+func (s *sysConfigService) FindOne(cnd *sqls.Cnd) *model.SysConfig {
+	return repositories.SysConfigRepository.FindOne(sqls.DB(), cnd)
+}
+
+func (s *sysConfigService) FindPageByParams(params *params.QueryParams) (list []model.SysConfig, paging *sqls.Paging) {
+	return repositories.SysConfigRepository.FindPageByParams(sqls.DB(), params)
+}
+
+
 func (s *sysConfigService) IsCreateArticleEmailVerified() bool {
 	value := cache.SysConfigCache.GetValue(constants.SysConfigCreateArticleEmailVerified)
 	return strs.EqualsIgnoreCase(value, "true") || strs.EqualsIgnoreCase(value, "1")
@@ -355,4 +364,24 @@ func (s *sysConfigService) GetInt(key string, def int) (value int) {
 		return
 	}
 	return
+}
+
+//-------------------------------------------
+func (s *sysConfigService) IsEnableHideTitle() bool {
+	value := cache.SysConfigCache.GetValue(constants.SysConfigEnableHideContent)
+	json := gjson.Parse(configStr)
+	configs, ok := json.Value().(map[string]interface{})
+	if !ok {
+		return errors.New("配置数据格式错误")
+	}
+	return sqls.DB().Transaction(func(tx *gorm.DB) error {
+		for k := range configs {
+			v := json.Get(k).String()
+			if err := s.setSingle(tx, k, v, "", ""); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	return strs.EqualsIgnoreCase(value, "true") || strs.EqualsIgnoreCase(value, "1")
 }
