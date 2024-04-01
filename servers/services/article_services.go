@@ -402,3 +402,27 @@ func (s *articleService) GetUserArticles(userId, cursor int64) (articles []model
 	}
 	return
 }
+
+func (s *articleService) Delete(id int64) error {
+	err := repositories.ArticleRepository.UpdateColumn(sqls.DB(), id, "status", constants.StatusDeleted)
+	if err == nil {
+		// 删掉标签文章
+		ArticleTagService.DeleteByArticleId(id)
+	}
+	return err
+}
+
+// 获取文章
+func (s *articleService) GetArticleInIds(articleIds []int64) []model.Article {
+	if len(articleIds) == 0 {
+		return nil
+	}
+	var articles []model.Article
+	sqls.DB().Where("id in (?)", articleIds).Order("id desc").Find(&articles)
+	return articles
+}
+
+func (s *articleService) UpdateColumnId(id int64, name string, value interface{}) error {
+	err := repositories.ArticleRepository.UpdateColumn(sqls.DB(), id, name, value)
+	return err
+}
