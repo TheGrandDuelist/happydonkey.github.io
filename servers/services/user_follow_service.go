@@ -255,3 +255,19 @@ func (s *userFollowService) IsFollowedUsers(userId int64, otherIds ...int64) has
 	}
 	return *set
 }
+
+func (s *userFollowService) FindPageByParamsId(params *params.QueryParams) (list []model.UserFollow, paging *sqls.Paging) {
+	return repositories.UserFollowRepository.FindPageByParams(sqls.DB(), params)
+}
+
+func (s *userFollowService) FindPageByCndId(cnd *sqls.Cnd) (list []model.UserFollow, paging *sqls.Paging) {
+	return repositories.UserFollowRepository.FindPageByCnd(sqls.DB(), cnd)
+}
+
+func (s *userFollowService) CountIds(cnd *sqls.Cnd) int64 {
+	return repositories.UserFollowRepository.Count(sqls.DB(), cnd)
+}
+
+func (s *userFollowService) CreateFollowes(t *model.UserFollow) error {
+	return repositories.UserFollowRepository.Create(sqls.DB(), t)
+}
