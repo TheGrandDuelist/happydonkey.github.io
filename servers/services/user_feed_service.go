@@ -72,3 +72,19 @@ func (s *userFeedService) DeleteByUser(userId, authorId int64) {
 func (s *userFeedService) DeleteByDataId(dataId int64, dataType string) {
 	sqls.DB().Where("data_id = ? and data_type = ?", dataId, dataType).Delete(model.UserFeed{})
 }
+
+func (s *userFeedService) CountName(cnd *sqls.Cnd) int64 {
+	return repositories.UserFeedRepository.Count(sqls.DB(), cnd)
+}
+
+func (s *userFeedService) CreateTopicTemp(t *model.UserFeed) error {
+	return repositories.UserFeedRepository.Create(sqls.DB(), t)
+}
+
+func (s *userFeedService) UpdateUser(t *model.UserFeed) error {
+	return repositories.UserFeedRepository.Update(sqls.DB(), t)
+}
+
+func (s *userFeedService) UpdatesUsers(id int64, columns map[string]interface{}) error {
+	return repositories.UserFeedRepository.Updates(sqls.DB(), id, columns)
+}
