@@ -151,9 +151,22 @@ func (s *operateLogService) Count(cnd *sqls.Cnd) int64 {
 	return repositories.OperateLogRepository.Count(sqls.DB(), cnd)
 }
 
-func (s *operateLogService) Update(t *model.OperateLog) error {
+func (s *operateLogService) UpdateLog(t *model.OperateLog) error {
 	return repositories.OperateLogRepository.Update(sqls.DB(), t)
 }
+
+func (s *operateLogService) FindOneLog(cnd *sqls.Cnd) *model.OperateLog {
+	return repositories.OperateLogRepository.FindOne(sqls.DB(), cnd)
+}
+
+func (s *operateLogService) GetLogById(id int64) *model.OperateLog {
+	return repositories.OperateLogRepository.Get(sqls.DB(), id)
+}
+
+func (s *operateLogService) FindPageByCnd(cnd *sqls.Cnd) (list []model.OperateLog, paging *sqls.Paging) {
+	return repositories.OperateLogRepository.FindPageByCnd(sqls.DB(), cnd)
+}
+
 
 func (s *operateLogService) UpdateColumn(id int64, name string, value interface{}) error {
 	return repositories.OperateLogRepository.UpdateColumn(sqls.DB(), id, name, value)
