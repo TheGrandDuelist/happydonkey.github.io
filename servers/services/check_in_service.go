@@ -120,6 +120,22 @@ func (s *checkInService) CheckIn(userId int64) error {
 	return err
 }
 
+func (s *checkInService) FindOneId(cnd *sqls.Cnd) *model.CheckIn {
+	return repositories.CheckInRepository.FindOne(sqls.DB(), cnd)
+}
+
+func (s *checkInService) FindPageByCnd(cnd *sqls.Cnd) (list []model.CheckIn, paging *sqls.Paging) {
+	return repositories.CheckInRepository.FindPageByCnd(sqls.DB(), cnd)
+}
+
+func (s *checkInService) Count(cnd *sqls.Cnd) int64 {
+	return repositories.CheckInRepository.Count(sqls.DB(), cnd)
+}
+
+func (s *checkInService) FindPageByParams(params *params.QueryParams) (list []model.CheckIn, paging *sqls.Paging) {
+	return repositories.CheckInRepository.FindPageByParams(sqls.DB(), params)
+}
+
 func (s *checkInService) UpdateColumn(id int64, name string, value interface{}) error {
 	return repositories.CheckInRepository.UpdateColumn(sqls.DB(), id, name, value)
 }
