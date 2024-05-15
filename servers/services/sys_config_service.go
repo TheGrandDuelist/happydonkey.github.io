@@ -23,6 +23,28 @@ import (
 	"bbs-go/repositories"
 )
 
+func (s *sysConfigService) GetLoginMethodFun() model.LoginMethod {
+	loginMethodStr := cache.SysConfigCache.GetValue(constants.SysConfigLoginMethod)
+
+	useDefault := true
+	var loginMethod model.LoginMethod
+	if strs.IsNotBlank(loginMethodStr) {
+		if err := jsons.Parse(loginMethodStr, &loginMethod); err != nil {
+			logrus.Warn("登录方式数据错误", err)
+		} else {
+			useDefault = false
+		}
+	}
+	if useDefault {
+		loginMethod = model.LoginMethod{
+			Password: true,
+			QQ:       true,
+			Github:   true,
+		}
+	}
+	return loginMethod
+}
+
 var SysConfigService = newSysConfigService()
 
 func newSysConfigService() *sysConfigService {
