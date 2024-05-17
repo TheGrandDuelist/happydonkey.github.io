@@ -72,3 +72,20 @@ func (s *userReportService) CreateArticle(t *model.UserReport) error {
 func (s *userReportService) UpdateArticle(t *model.UserReport) error {
 	return repositories.UserReportRepository.UpdateArticle(sqls.DB(), t)
 }
+
+func (s *userReportService) CountArticleId(cnd *sqls.Cnd) int64 {
+	return repositories.UserReportRepository.Count(sqls.DB(), cnd)
+}
+
+func (s *userReportService) CreateArticleContent(t *model.UserReport) error {
+	return repositories.UserReportRepository.Create(sqls.DB(), t)
+}
+
+func (s *userReportService) UpdateArticleContent(t *model.UserReport) error {
+	return repositories.UserReportRepository.Update(sqls.DB(), t)
+}
+
+func (s *userReportService) UpdatesArticleContent(id int64, columns map[string]interface{}) error {
+	return repositories.UserReportRepository.Updates(sqls.DB(), id, columns)
+}
+
