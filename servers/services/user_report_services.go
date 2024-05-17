@@ -65,14 +65,6 @@ func (s *userReportService) Delete(id int64) {
 	repositories.UserReportRepository.Delete(sqls.DB(), id)
 }
 
-func (s *userReportService) CreateArticle(t *model.UserReport) error {
-	return repositories.UserReportRepository.CreateArticle(sqls.DB(), t)
-}
-
-func (s *userReportService) UpdateArticle(t *model.UserReport) error {
-	return repositories.UserReportRepository.UpdateArticle(sqls.DB(), t)
-}
-
 func (s *userReportService) CountArticleId(cnd *sqls.Cnd) int64 {
 	return repositories.UserReportRepository.Count(sqls.DB(), cnd)
 }
