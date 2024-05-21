@@ -77,3 +77,25 @@ type PathRole struct {
 	Pattern string   // path pattern
 	Roles   []string // roles
 }
+
+func getPathRolesTypes(ctx iris.Context) []string {
+	p := ctx.Path()
+	for _, pathRole := range config {
+		if antPathMatcher.Match(pathRole.Pattern, p) {
+			return pathRole.Roles
+		}
+	}
+	return nil
+}
+
+// notLogin 未登录返回
+func notLoginBack(ctx iris.Context) {
+	_ = ctx.JSON(web.JsonError(errs.NotLogin))
+	ctx.StopExecution()
+}
+
+// noPermission 无权限返回
+func noPermissionBack(ctx iris.Context) {
+	_ = ctx.JSON(web.JsonErrorCode(2, "无权限"))
+	ctx.StopExecution()
+}
