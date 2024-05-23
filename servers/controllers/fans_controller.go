@@ -158,3 +158,34 @@ func (c *FansController) GetRecentFollow() *web.JsonResult {
 	}
 	return web.JsonCursorData(itemList, strconv.FormatInt(cursor, 10), hasMore)
 }
+
+func (c *FansController) GetFansNames() *web.JsonResult {
+	userId := params.FormValueInt64Default(c.Ctx, "userId", 0)
+	
+	cursor := params.FormValueInt64Default(c.Ctx, "cursor", 0)
+	
+	userIds, cursor, hasMore := services.UserFollowService.GetFans(userId, cursor, 10)
+
+	current := services.UserTokenService.GetCurrent(c.Ctx)
+	
+	var followedSet hashset.Set
+	if current != nil {
+		followedSet = services.UserFollowService.IsFollowedUsers(current.Id, userIds...)
+	}
+	
+	var itemList []*model.UserInfo
+    	for _, id := range userIds {
+    		item := render.BuildUserInfoDefaultIfNull(id)
+    		item.Followed = followedSet.Contains(id)
+    		itemList = append(itemList, item)
+    	}
+
+	var itemList []*model.UserInfo
+	for _, id := range userIds {
+		item := render.BuildUserInfoDefaultIfNull(id)
+		item.Followed = followedSet.Contains(id)
+		itemList = append(itemList, item)
+	}
+	
+	return web.JsonCursorData(itemList, strconv.FormatInt(cursor, 10), hasMore)
+}
