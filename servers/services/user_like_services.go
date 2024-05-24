@@ -280,3 +280,29 @@ func (s *userLikeService) like(tx *gorm.DB, userId int64, entityType string, ent
 func (s userLikeService) unlike(tx *gorm.DB, userId int64, entityType string, entityId int64) error {
 	return tx.Delete(&model.UserLike{}, "user_id = ? and entity_id = ? and entity_type = ?", userId, entityId, entityType).Error
 }
+
+func (s *userLikeService) TopicUnLikeAndDelete(userId int64, topicId int64) error {
+	topic := repositories.TopicRepository.Get(sqls.DB(), topicId)
+	if topic == nil || topic.Status != constants.StatusOk {
+		return errors.New("话题不存在")
+	}
+
+	if err := sqls.DB().Transaction(func(tx *gorm.DB) error {
+		if err := s.unlike(tx, userId, constants.EntityTopic, topicId); err != nil {
+			return err
+		}
+		
+		return repositories.TopicRepository.UpdateColumn(tx, topicId, "like_count", gorm.Expr("like_count - 1"))
+	}); err != nil {
+		return err
+	}
+
+
+	event.Send(event.UserUnLikeEvent{
+		UserId:     userId,
+		EntityId:   topicId,
+		EntityType: constants.EntityTopic,
+	})
+
+	return nil
+}
