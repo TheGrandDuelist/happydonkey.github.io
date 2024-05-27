@@ -306,3 +306,13 @@ func (s *userLikeService) TopicUnLikeAndDelete(userId int64, topicId int64) erro
 
 	return nil
 }
+
+// 返回已点赞实体编号用户
+func (s *userLikeService) IsLikedUser(userId int64, entityType string, entityIds []int64) (likedEntityIds []int64) {
+	list := repositories.UserLikeRepository.Find(sqls.DB(), sqls.NewCnd().Eq("user_id", userId).
+		In("entity_id", entityIds).Eq("entity_type", entityType))
+	for _, like := range list {
+		likedEntityIds = append(likedEntityIds, like.EntityId)
+	}
+	return
+}
