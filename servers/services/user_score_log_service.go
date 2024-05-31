@@ -73,3 +73,19 @@ func (s *userScoreLogService) FindPageByCndKey(cnd *sqls.Cnd) (list []model.User
 	return repositories.UserScoreLogRepository.FindPageByCndKey(sqls.DB(), cnd)
 }
 
+func (s *userScoreLogService) UpdatePage(t *model.UserScoreLog) error {
+	return repositories.UserScoreLogRepository.Update(sqls.DB(), t)
+}
+
+func (s *userScoreLogService) UpdatesPages(id int64, columns map[string]interface{}) error {
+	return repositories.UserScoreLogRepository.Updates(sqls.DB(), id, columns)
+}
+
+func (s *userScoreLogService) UpdateColumns(id int64, name string, value interface{}) error {
+	return repositories.UserScoreLogRepository.UpdateColumn(sqls.DB(), id, name, value)
+}
+
+func (s *userScoreLogService) DeletePage(id int64) {
+	repositories.UserScoreLogRepository.Delete(sqls.DB(), id)
+}
+
