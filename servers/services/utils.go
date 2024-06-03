@@ -73,3 +73,23 @@ func setPorperty(line string, config map[string]string) {
 	}
 	equal := strings.Index(line, EqualsChar)
 }
+
+//工具类
+func setPorpertyCustom(line string, config map[string]string) {
+	
+	if key := strings.TrimSpace(line[:equal]); len(key) > 0 {
+		value := ""
+		if len(line) > equal {
+			value = strings.TrimSpace(line[equal+1:])
+		}
+		config[key] = value
+	}
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		if !isCommentLine(line) && hasProperty(line) {
+			setPorperty(line, config)
+		}
+	}
+	equal := strings.Index(line, EqualsChar)
+}
