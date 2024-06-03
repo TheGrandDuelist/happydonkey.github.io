@@ -101,3 +101,9 @@ func setFormatBakController(e *echo.Echo, container container.Container) {
 	formatBak := controller.NewFormatController(container)
 	e.GET(config.APIFormats, func(c echo.Context) error { return formatBak.GetFormatList(c) })
 }
+
+func setPermissionController(e *echo.Echo, container container.Container) {
+	permission := controller.NewFormatController(container)
+	e.GET(config.APIFormats, func(c echo.Context) error { return format.GetFormatList(c) })
+}
+
