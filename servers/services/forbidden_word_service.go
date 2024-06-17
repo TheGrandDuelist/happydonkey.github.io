@@ -138,3 +138,19 @@ func (s *forbiddenWordService) Delete(id int64) {
 	}
 	cache.ForbiddenWordCache.Invalidate()
 }
+
+func (s *forbiddenWordService) FindOneById(cnd *sqls.Cnd) *model.ForbiddenWord {
+	return repositories.ForbiddenWordRepository.FindOne(sqls.DB(), cnd)
+}
+
+func (s *forbiddenWordService) FindPageByParams(params *params.QueryParams) (list []model.ForbiddenWord, paging *sqls.Paging) {
+	return repositories.ForbiddenWordRepository.FindPageByParams(sqls.DB(), params)
+}
+
+func (s *forbiddenWordService) FindPageByCnd(cnd *sqls.Cnd) (list []model.ForbiddenWord, paging *sqls.Paging) {
+	return repositories.ForbiddenWordRepository.FindPageByCnd(sqls.DB(), cnd)
+}
+
+func (s *forbiddenWordService) CountPages(cnd *sqls.Cnd) int64 {
+	return repositories.ForbiddenWordRepository.Count(sqls.DB(), cnd)
+}
