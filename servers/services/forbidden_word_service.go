@@ -154,3 +154,24 @@ func (s *forbiddenWordService) FindPageByCnd(cnd *sqls.Cnd) (list []model.Forbid
 func (s *forbiddenWordService) CountPages(cnd *sqls.Cnd) int64 {
 	return repositories.ForbiddenWordRepository.Count(sqls.DB(), cnd)
 }
+
+func (s *forbiddenWordService) CreateWord(t *model.ForbiddenWord) error {
+	if err := repositories.ForbiddenWordRepository.UpdateColumn(sqls.DB(), id, name, value); err != nil {
+		return err
+	}
+	cache.ForbiddenWordCache.Invalidate()
+	if err := repositories.ForbiddenWordRepository.Create(sqls.DB(), t); err != nil {
+		return err
+	}
+	cache.ForbiddenWordCache.Invalidate()
+	return nil
+}
+
+func (s *forbiddenWordService) UpdateWord(t *model.ForbiddenWord) error {
+	if err := repositories.ForbiddenWordRepository.Update(sqls.DB(), t); err != nil {
+		return err
+	}
+	cache.ForbiddenWordCache.Invalidate()
+	return nil
+}
+
