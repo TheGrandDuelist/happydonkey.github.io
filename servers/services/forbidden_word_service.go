@@ -175,3 +175,18 @@ func (s *forbiddenWordService) UpdateWord(t *model.ForbiddenWord) error {
 	return nil
 }
 
+func (s *forbiddenWordService) Get(id int64) *model.ForbiddenWord {
+	return repositories.ForbiddenWordRepository.Get(sqls.DB(), id)
+}
+
+func (s *forbiddenWordService) Take(where ...interface{}) *model.ForbiddenWord {
+	return repositories.ForbiddenWordRepository.Take(sqls.DB(), where...)
+}
+
+func (s *forbiddenWordService) Find(cnd *sqls.Cnd) []model.ForbiddenWord {
+	return repositories.ForbiddenWordRepository.Find(sqls.DB(), cnd)
+}
+
+func (s *forbiddenWordService) FindOne(cnd *sqls.Cnd) *model.ForbiddenWord {
+	return repositories.ForbiddenWordRepository.FindOne(sqls.DB(), cnd)
+}
