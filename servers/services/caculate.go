@@ -185,4 +185,17 @@ func (s *checkInService) CheckInPoint(userId int64) error {
 		}
 	}
 	return err
+
+}
+
+func (s *checkInService) GetOne(id int64) *model.CheckIn {
+	return repositories.CheckInRepository.Get(sqls.DB(), id)
+}
+
+func (s *checkInService) TakeOne(where ...interface{}) *model.CheckIn {
+	return repositories.CheckInRepository.Take(sqls.DB(), where...)
+}
+
+func (s *checkInService) FindOne(cnd *sqls.Cnd) []model.CheckIn {
+	return repositories.CheckInRepository.Find(sqls.DB(), cnd)
 }
