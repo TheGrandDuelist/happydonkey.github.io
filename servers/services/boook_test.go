@@ -263,3 +263,28 @@ func createBookForNotFormat() *dto.BookDto {
 		FormatID:   99,
 	}
 }
+
+func TestFindByID_Success(t *testing.T) {
+	container := test.PrepareForServiceTest()
+
+	setUpTestData(container)
+
+	service := NewBookService(container)
+	result, err := service.FindByID("1")
+
+	assert.Equal(t, uint(1), result.ID)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, result)
+}
+
+func TestFindByID_IdNotNumeric(t *testing.T) {
+	container := test.PrepareForServiceTest()
+
+	setUpTestData(container)
+
+	service := NewBookService(container)
+	result, err := service.FindByID("ABCD")
+
+	assert.Nil(t, result)
+	assert.Error(t, err, "failed to fetch data")
+}
