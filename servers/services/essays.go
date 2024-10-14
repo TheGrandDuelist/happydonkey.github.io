@@ -426,3 +426,56 @@ func (s *articleService) UpdateColumnId(id int64, name string, value interface{}
 	err := repositories.ArticleRepository.UpdateColumn(sqls.DB(), id, name, value)
 	return err
 }
+
+// 相关文章
+func (s *articleService) GetRelatedArticles(articleId int64) []model.Article {
+	tagIds := cache.ArticleTagCache.Get(articleId)
+	if len(tagIds) == 0 {
+		return nil
+	}
+	var articleTags []model.ArticleTag
+	sqls.DB().Where("tag_id in (?)", tagIds).Limit(30).Find(&articleTags)
+
+	set := hashset.New()
+	if len(articleTags) > 0 {
+		for _, articleTag := range articleTags {
+			set.Add(articleTag.ArticleId)
+		}
+	}
+
+	var articleIds []int64
+	for i, articleId := range set.Values() {
+		if i < 10 {
+			articleIds = append(articleIds, articleId.(int64))
+		}
+	}
+
+	return s.GetArticleInIds(articleIds)
+}
+
+// 近期文章
+func (s *articleService) GetNearlyArticles(articleId int64) []model.Article {
+	articles := repositories.ArticleRepository.Find(sqls.DB(), sqls.NewCnd().Where("id < ?", articleId).Desc("id").Limit(10))
+	var ret []model.Article
+	for _, article := range articles {
+		if article.Status == constants.StatusOk {
+			ret = append(ret, article)
+		}
+	}
+	return ret
+}
+
+// 倒序扫描
+func (s *articleService) ScanDesc(callback func(articles []model.Article)) {
+	var cursor int64 = math.MaxInt64
+	for {
+		list := repositories.ArticleRepository.Find(sqls.DB(), sqls.NewCnd().
+			Cols("id", "status", "create_time", "update_time").
+			Lt("id", cursor).Desc("id").Limit(1000))
+		if len(list) == 0 {
+			break
+		}
+		cursor = list[len(list)-1].Id
+		callback(list)
+	}
+}
