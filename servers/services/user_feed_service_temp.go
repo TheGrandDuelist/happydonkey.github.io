@@ -90,3 +90,28 @@ func (s *userFeedService) UpdateColumnId(id int64, name string, value interface{
 func (s *userFeedService) CreateSummary(t *model.UserFeed) error {
 	return repositories.UserFeedRepository.Create(sqls.DB(), t)
 }
+
+func (s *userFeedService) FindOne(cnd *sqls.Cnd) *model.UserFeed {
+	return repositories.UserFeedRepository.FindOne(sqls.DB(), cnd)
+}
+
+
+func (s *userFeedService) Updates(id int64, columns map[string]interface{}) error {
+	return repositories.UserFeedRepository.Updates(sqls.DB(), id, columns)
+}
+
+func (s *userFeedService) DeleteByDataId(dataId int64, dataType string) {
+	sqls.DB().Where("data_id = ? and data_type = ?", dataId, dataType).Delete(model.UserFeed{})
+}
+
+func (s *userFeedService) UpdateColumn(id int64, name string, value interface{}) error {
+	return repositories.UserFeedRepository.UpdateColumn(sqls.DB(), id, name, value)
+}
+
+func (s *userFeedService) Create(t *model.UserFeed) error {
+	return repositories.UserFeedRepository.Create(sqls.DB(), t)
+}
+
+func (s *userFeedService) Update(t *model.UserFeed) error {
+	return repositories.UserFeedRepository.Update(sqls.DB(), t)
+}
