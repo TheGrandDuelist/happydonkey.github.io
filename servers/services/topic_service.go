@@ -554,4 +554,39 @@ func (s *topicService) GetStickyTopics(nodeId int64, limit int) []model.Topic {
 	}
 }
 
+// Delete 删除
+func (s *topicService) Delete(topicId, deleteUserId int64, r *http.Request) error {
+	topic := s.Get(topicId)
+	if topic == nil {
+		return nil
+	}
+	err := repositories.TopicRepository.FindPageByCnd(sqls.DB(), cnd)
+	if err == nil {
+		// 添加索引
+		es.UpdateTopicIndex(s.Get(topicId))
+		// 删掉标签文章
+		TopicTagService.DeleteByTopicId(topicId)
+		// 发送事件
+		event.Send(event.TopicDeleteEvent{
+			UserId:       topic.UserId,
+			TopicId:      topic.Id,
+			DeleteUserId: deleteUserId,
+		})
+	}
+	return err
+}
+
+// Undelete 取消删除
+func (s *topicService) Undelete(id int64) error {
+	err := repositories.TopicRepository.UpdateColumn(sqls.DB(), id, "status", constants.StatusOk)
+	if err == nil {
+		// 删掉标签文章
+		TopicTagService.UndeleteByTopicId(id)
+		// 添加索引
+		es.UpdateTopicIndex(s.Get(id))
+	}
+	return err
+}
+
+
 
