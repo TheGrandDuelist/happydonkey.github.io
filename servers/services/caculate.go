@@ -385,3 +385,58 @@ func (s *checkInService) CheckInPoint(userId int64) error {
 
 }
 
+
+func (s *checkInService) CheckIn(userId int64) error {
+	s.m.Lock()
+	defer s.m.Unlock()
+	var (
+		checkIn         = s.GetByUserId(userId)
+		dayName         = dates.GetDay(time.Now())
+		yesterdayName   = dates.GetDay(time.Now().Add(-time.Hour * 24))
+		consecutiveDays = 1
+		err             error
+	)
+
+	if checkIn != nil && checkIn.LatestDayName == dayName {
+		return errors.New("你已签到")
+	}
+
+	if checkIn == nil {
+		err = s.Create(&model.CheckIn{
+			Model:           model.Model{},
+			UserId:          userId,
+			LatestDayName:   dayName,
+			ConsecutiveDays: consecutiveDays,
+			CreateTime:      dates.NowTimestamp(),
+			UpdateTime:      dates.NowTimestamp(),
+		})
+	} else {
+		checkIn.LatestDayName = dayName
+		checkIn.ConsecutiveDays = consecutiveDays
+		checkIn.UpdateTime = dates.NowTimestamp()
+		err = s.Update(checkIn)
+	}
+	
+	if checkIn != nil && checkIn.LatestDayName == yesterdayName {
+		consecutiveDays = checkIn.ConsecutiveDays + 1
+	}
+	
+	if err == nil {
+		// 清理签到排行榜缓存
+		cache.UserCache.RefreshCheckInRank()
+		// 处理签到积分
+		config := SysConfigService.GetConfig()
+		if config.ScoreConfig.CheckInScore > 0 {
+			_ = UserService.IncrScore(userId, config.ScoreConfig.CheckInScore, constants.EntityCheckIn,
+				strconv.FormatInt(userId, 10), "签到"+strconv.Itoa(dayName))
+		} else {
+			logrus.Warn("签到积分未配置...")
+		}
+	}
+	return err
+}
+
+func (s *checkInService) UpdateColumn(id int64, name string, value interface{}) error {
+	return repositories.CheckInRepository.UpdateColumn(sqls.DB(), id, name, value)
+}
+
