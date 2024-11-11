@@ -317,6 +317,21 @@ func (s *articleService) ScanDesc(callback func(articles []model.Article)) {
 	}
 }
 
+func (s *articleService) FindPageByCnd(cnd *sqls.Cnd) (list []model.Article, paging *sqls.Paging) {
+	return repositories.ArticleRepository.FindPageByCnd(sqls.DB(), cnd)
+}
+
+func (s *articleService) Update(t *model.Article) error {
+	err := repositories.ArticleRepository.Update(sqls.DB(), t)
+	return err
+}
+
+func (s *articleService) Updates(id int64, columns map[string]interface{}) error {
+	err := repositories.ArticleRepository.Updates(sqls.DB(), id, columns)
+	return err
+}
+
+
 func (s *articleService) ScanByUser(userId int64, callback func(articles []model.Article)) {
 	var cursor int64 = 0
 	for {
