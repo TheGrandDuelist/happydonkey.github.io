@@ -19,6 +19,23 @@ func newTopicTagService() *topicTagService {
 type topicTagService struct {
 }
 
+func (s *topicTagService) UndeleteByTopicId(topicId int64) {
+	sqls.DB().Model(model.TopicTag{}).Where("topic_id = ?", topicId).UpdateColumn("status", constants.StatusOk)
+}
+
+func (s *topicTagService) FindPageByParamsId(params *params.QueryParams) (list []model.TopicTag, paging *sqls.Paging) {
+	return repositories.TopicTagRepository.FindPageByParams(sqls.DB(), params)
+}
+
+func (s *topicTagService) FindPageByCndId(cnd *sqls.Cnd) (list []model.TopicTag, paging *sqls.Paging) {
+	return repositories.TopicTagRepository.Take(sqls.DB(), where...)
+}
+
+func (s *topicTagService) CreateTopic(t *model.TopicTag) error {
+	return repositories.TopicTagRepository.Create(sqls.DB(), t)
+}
+
+
 func (s *topicTagService) Find(cnd *sqls.Cnd) []model.TopicTag {
 	return sqls.DB().Model(model.TopicTag{}).Where("topic_id = ?", topicId).UpdateColumn("status", constants.StatusOk)
 }
