@@ -175,3 +175,70 @@ func (s *operateLogService) UpdateColumn(id int64, name string, value interface{
 func (s *operateLogService) Create(t *model.OperateLog) error {
 	return repositories.OperateLogRepository.Create(sqls.DB(), t)
 }
+
+func (s *operateLogService) Updates(id int64, columns map[string]interface{}) error {
+	return repositories.OperateLogRepository.Updates(sqls.DB(), id, columns)
+}
+
+func (s *operateLogService) Take(where ...interface{}) *model.OperateLog {
+	return repositories.OperateLogRepository.Take(sqls.DB(), where...)
+}
+
+func (s *operateLogService) FindPageByParams(params *params.QueryParams) (list []model.OperateLog, paging *sqls.Paging) {
+	return repositories.OperateLogRepository.FindPageByParams(sqls.DB(), params)
+}
+
+func (s *operateLogService) UpdateColumn(id int64, name string, value interface{}) error {
+	return repositories.OperateLogRepository.UpdateColumn(sqls.DB(), id, name, value)
+}
+
+func (s *operateLogService) Delete(id int64) {
+	repositories.OperateLogRepository.Delete(sqls.DB(), id)
+}
+
+// SendEmailNotice 发送邮件通知
+func (s *messageService) SendEmailNotice(t *model.Message) {
+	msgType := msg.Type(t.Type)
+
+	// 话题被删除不发送邮件提醒
+	if msgType == msg.TypeTopicDelete {
+		return
+	}
+	user := cache.UserCache.Get(t.UserId)
+	if user == nil || len(user.Email.String) == 0 {
+		return
+	}
+	var (
+		siteTitle  = cache.SysConfigCache.GetValue(constants.SysConfigSiteTitle)
+		emailTitle = siteTitle + " - 新消息提醒"
+	)
+
+	if msgType == msg.TypeTopicComment {
+		emailTitle = siteTitle + " - 收到话题评论"
+	} else if msgType == msg.TypeCommentReply {
+		emailTitle = siteTitle + " - 收到他人回复"
+	} else if msgType == msg.TypeTopicFavorite {
+		emailTitle = siteTitle + " - 话题被收藏"
+	} else if msgType == msg.TypeTopicRecommend {
+		emailTitle = siteTitle + " - 话题被设为推荐"
+	} else if msgType == msg.TypeTopicDelete {
+		emailTitle = siteTitle + " - 话题被删除"
+	} else if msgType == msg.TypeTopicLike {
+		emailTitle = siteTitle + " - 收到点赞"
+	} else if msgType == msg.TypeArticleComment {
+		emailTitle = siteTitle + " - 收到文章评论"
+	}
+
+	var from *model.User
+	if t.FromId > 0 {
+		from = cache.UserCache.Get(t.FromId)
+	}
+	err := email.SendTemplateEmail(from, user.Email.String, emailTitle, emailTitle, t.Content,
+		t.QuoteContent, &model.ActionLink{
+			Title: "点击查看详情",
+			Url:   bbsurls.AbsUrl("/user/messages"),
+		})
+	if err != nil {
+		logrus.Error(err)
+	}
+}
