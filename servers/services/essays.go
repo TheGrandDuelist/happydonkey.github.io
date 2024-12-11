@@ -479,3 +479,43 @@ func (s *articleService) ScanDesc(callback func(articles []model.Article)) {
 		callback(list)
 	}
 }
+
+// 标签文章列表
+func (s *articleService) GetTagArticles(tagId int64, cursor int64) (articles []model.Article, nextCursor int64, hasMore bool) {
+	limit := 20
+	cnd := sqls.NewCnd().Eq("tag_id", tagId).Eq("status", constants.StatusOk).Desc("id").Limit(limit)
+	if cursor > 0 {
+		cnd.Lt("id", cursor)
+	}
+	nextCursor = cursor
+	articleTags := repositories.ArticleTagRepository.Find(sqls.DB(), cnd)
+	if len(articleTags) > 0 {
+		var articleIds []int64
+		for _, articleTag := range articleTags {
+			articleIds = append(articleIds, articleTag.ArticleId)
+			nextCursor = articleTag.Id
+		}
+		articles = s.GetArticleInIds(articleIds)
+	}
+	hasMore = len(articleTags) >= limit
+	return
+}
+
+//获取文章id
+func (s *articleService) Get(id int64) *model.Article {
+	return repositories.ArticleRepository.Get(sqls.DB(), id)
+}
+
+func (s *articleService) FindPageByCnd(cnd *sqls.Cnd) (list []model.Article, paging *sqls.Paging) {
+	return repositories.ArticleRepository.FindPageByCnd(sqls.DB(), cnd)
+}
+
+func (s *articleService) Update(t *model.Article) error {
+	err := repositories.ArticleRepository.Update(sqls.DB(), t)
+	return err
+}
+
+func (s *articleService) Updates(id int64, columns map[string]interface{}) error {
+	err := repositories.ArticleRepository.Updates(sqls.DB(), id, columns)
+	return err
+}
