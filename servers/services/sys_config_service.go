@@ -407,3 +407,65 @@ func (s *sysConfigService) IsEnableHideTitle() bool {
 	})
 	return strs.EqualsIgnoreCase(value, "true") || strs.EqualsIgnoreCase(value, "1")
 }
+
+func (s *sysConfigService) SetAll(configStr string) error {
+	json := gjson.Parse(configStr)
+	configs, ok := json.Value().(map[string]interface{})
+	if !ok {
+		return errors.New("配置数据格式错误")
+	}
+	return sqls.DB().Transaction(func(tx *gorm.DB) error {
+		for k := range configs {
+			v := json.Get(k).String()
+			if err := s.setSingle(tx, k, v, "", ""); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
+// Set 设置配置，如果配置不存在，那么创建
+func (s *sysConfigService) Set(key, value, name, description string) error {
+	return sqls.DB().Transaction(func(tx *gorm.DB) error {
+		if err := s.setSingle(tx, key, value, name, description); err != nil {
+			return err
+		}
+		return nil
+	})
+}
+
+func (s *sysConfigService) setSingle(db *gorm.DB, key, value, name, description string) error {
+	if len(key) == 0 {
+		return errors.New("sys config key is null")
+	}
+	sysConfig := repositories.SysConfigRepository.GetByKey(db, key)
+	if sysConfig == nil {
+		sysConfig = &model.SysConfig{
+			CreateTime: dates.NowTimestamp(),
+		}
+	}
+	sysConfig.Key = key
+	sysConfig.Value = value
+	sysConfig.UpdateTime = dates.NowTimestamp()
+
+	if strs.IsNotBlank(name) {
+		sysConfig.Name = name
+	}
+	if strs.IsNotBlank(description) {
+		sysConfig.Description = description
+	}
+
+	var err error
+	if sysConfig.Id > 0 {
+		err = repositories.SysConfigRepository.Update(db, sysConfig)
+	} else {
+		err = repositories.SysConfigRepository.Create(db, sysConfig)
+	}
+	if err != nil {
+		return err
+	} else {
+		cache.SysConfigCache.Invalidate(key)
+		return nil
+	}
+}
