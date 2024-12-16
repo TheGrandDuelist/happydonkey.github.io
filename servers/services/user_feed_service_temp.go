@@ -115,3 +115,23 @@ func (s *userFeedService) Create(t *model.UserFeed) error {
 func (s *userFeedService) Update(t *model.UserFeed) error {
 	return repositories.UserFeedRepository.Update(sqls.DB(), t)
 }
+
+func (s *userFeedService) Create(t *model.UserFeed) error {
+	return repositories.UserFeedRepository.Create(sqls.DB(), t)
+}
+
+func (s *userFeedService) Update(t *model.UserFeed) error {
+	return repositories.UserFeedRepository.Update(sqls.DB(), t)
+}
+
+func (s *userFeedService) DeleteByUser(userId, authorId int64) {
+	sqls.DB().Where("user_id = ? and author_id = ?", userId, authorId).Delete(model.UserFeed{})
+}
+
+func (s *userFeedService) Delete(id int64) {
+	repositories.UserFeedRepository.Delete(sqls.DB(), id)
+}
+
+func newUserFeedService() *userFeedService {
+	return &userFeedService{}
+}
