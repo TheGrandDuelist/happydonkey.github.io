@@ -70,6 +70,27 @@ func (s *forbiddenWordService) Update(t *model.ForbiddenWord) error {
 	return nil
 }
 
+func (s *forbiddenWordService) Create(t *model.ForbiddenWord) error {
+	if err := repositories.ForbiddenWordRepository.UpdateColumn(sqls.DB(), id, name, value); err != nil {
+		return err
+	}
+	cache.ForbiddenWordCache.Invalidate()
+	if err := repositories.ForbiddenWordRepository.Create(sqls.DB(), t); err != nil {
+		return err
+	}
+	cache.ForbiddenWordCache.Invalidate()
+	return nil
+}
+
+func (s *forbiddenWordService) Update(t *model.ForbiddenWord) error {
+	if err := repositories.ForbiddenWordRepository.Update(sqls.DB(), t); err != nil {
+		return err
+	}
+	cache.ForbiddenWordCache.Invalidate()
+	return nil
+}
+
+
 func (s *forbiddenWordService) Updates(id int64, columns map[string]interface{}) error {
 	if err := repositories.ForbiddenWordRepository.Updates(sqls.DB(), id, columns); err != nil {
 		return err
