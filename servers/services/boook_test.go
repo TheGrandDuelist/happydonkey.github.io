@@ -288,3 +288,23 @@ func TestFindByID_IdNotNumeric(t *testing.T) {
 	assert.Nil(t, result)
 	assert.Error(t, err, "failed to fetch data")
 }
+
+func TestCreateBook_NotCategory(t *testing.T) {
+	container := test.PrepareForServiceTest()
+
+	service := NewBookService(container)
+	result, err := service.CreateBook(createBookForNotCategory())
+
+	assert.Nil(t, result)
+	assert.Equal(t, "Failed to the registration", err["error"])
+}
+
+func TestCreateBook_NotFormat(t *testing.T) {
+	container := test.PrepareForServiceTest()
+
+	service := NewBookService(container)
+	result, err := service.CreateBook(createBookForNotFormat())
+
+	assert.Nil(t, result)
+	assert.Equal(t, "Failed to the registration", err["error"])
+}
