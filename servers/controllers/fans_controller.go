@@ -272,6 +272,97 @@ func (c *FansController) GetFansDE() *web.JsonResult {
 	return web.JsonCursorData(itemList, strconv.FormatInt(cursor, 10), hasMore)
 }
 
+func (c *FansController) GetFollows() *web.JsonResult {
+	userId := params.FormValueInt64Default(c.Ctx, "userId", 0)
+	cursor := params.FormValueInt64Default(c.Ctx, "cursor", 0)
+	userIds, cursor, hasMore := services.UserFollowService.GetFollows(userId, cursor, 10)
+
+	current := services.UserTokenService.GetCurrent(c.Ctx)
+	var followedSet hashset.Set
+	if current != nil {
+		if current.Id == userId {
+			followedSet = *hashset.New()
+			for _, id := range userIds {
+				followedSet.Add(id)
+			}
+		} else {
+			followedSet = services.UserFollowService.IsFollowedUsers(current.Id, userIds...)
+		}
+	}
+
+	return web.JsonCursorData(itemList, strconv.FormatInt(cursor, 10), hasMore)
+}
+
+func (c *FansController) GetRecentFans() *web.JsonResult {
+	userId := params.FormValueInt64Default(c.Ctx, "userId", 0)
+	userIds, cursor, hasMore := services.UserFollowService.GetFans(userId, 0, 10)
+
+	current := services.UserTokenService.GetCurrent(c.Ctx)
+	var followedSet hashset.Set
+	if current != nil {
+		followedSet = services.UserFollowService.IsFollowedUsers(current.Id, userIds...)
+	}
+
+	return web.JsonCursorData(itemList, strconv.FormatInt(cursor, 10), hasMore)
+}
+
+func (c *FansController) GetRecentFollow() *web.JsonResult {
+	userId := params.FormValueInt64Default(c.Ctx, "userId", 0)
+	userIds, cursor, hasMore := services.UserFollowService.GetFollows(userId, 0, 10)
+
+	current := services.UserTokenService.GetCurrent(c.Ctx)
+	var followedSet hashset.Set
+	if current != nil {
+		if current.Id == userId {
+			followedSet = *hashset.New()
+			for _, id := range userIds {
+				followedSet.Add(id)
+			}
+		} else {
+			followedSet = services.UserFollowService.IsFollowedUsers(current.Id, userIds...)
+		}
+	}
+
+	var itemList []*model.UserInfo
+	for _, id := range userIds {
+		item := render.BuildUserInfoDefaultIfNull(id)
+		item.Followed = followedSet.Contains(id)
+		itemList = append(itemList, item)
+	}
+	return web.JsonCursorData(itemList, strconv.FormatInt(cursor, 10), hasMore)
+}
+
+func (c *FansController) GetFansNames() *web.JsonResult {
+	userId := params.FormValueInt64Default(c.Ctx, "userId", 0)
+	
+	cursor := params.FormValueInt64Default(c.Ctx, "cursor", 0)
+	
+	userIds, cursor, hasMore := services.UserFollowService.GetFans(userId, cursor, 10)
+
+	current := services.UserTokenService.GetCurrent(c.Ctx)
+	
+	var followedSet hashset.Set
+	if current != nil {
+		followedSet = services.UserFollowService.IsFollowedUsers(current.Id, userIds...)
+	}
+	
+	var itemList []*model.UserInfo
+    	for _, id := range userIds {
+    		item := render.BuildUserInfoDefaultIfNull(id)
+    		item.Followed = followedSet.Contains(id)
+    		itemList = append(itemList, item)
+    	}
+
+	var itemList []*model.UserInfo
+	for _, id := range userIds {
+		item := render.BuildUserInfoDefaultIfNull(id)
+		item.Followed = followedSet.Contains(id)
+		itemList = append(itemList, item)
+	}
+	
+	return web.JsonCursorData(itemList, strconv.FormatInt(cursor, 10), hasMore)
+}
+
 func (c *FansController) GetFollowsDE() *web.JsonResult {
 	userId := params.FormValueInt64Default(c.Ctx, "userId", 0)
 	cursor := params.FormValueInt64Default(c.Ctx, "cursor", 0)
