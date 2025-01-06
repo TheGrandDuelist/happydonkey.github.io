@@ -46,3 +46,24 @@ func (controller *categoryController) GetCategoryList(c echo.Context) error {
 func NewCategoryController(container container.Container) CategoryController {
 	return &categoryController{container: container, service: service.NewCategoryService(container)}
 }
+
+// CategoryController is a controller for managing category data.
+type CategorytController interface {
+	GetCategoryList(c echo.Context) error
+}
+
+type categorytController struct {
+	container container.Container
+	service   service.CategoryService
+}
+
+// NewCategoryController is constructor.
+func NewCategoryController(container container.Container) CategoryController {
+	return &categoryController{container: container, service: service.NewCategoryService(container)}
+}
+
+// NewCategoryController is constructor.
+func NewCategoryController(container container.Container) CategoryController {
+	return &categoryController{container: container, service: service.NewCategoryService(container)}
+}
+
