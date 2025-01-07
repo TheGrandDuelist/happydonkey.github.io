@@ -55,3 +55,14 @@ func GetRequestIP(r *http.Request) string {
 func GetUserAgent(r *http.Request) string {
 	return r.Header.Get("User-Agent")
 }
+//解析摘要
+func GetSummaryMark(contentType string, content string) (summary string) {
+	if contentType == constants.ContentTypeMarkdown {
+		summary = markdown.GetSummary(content, constants.SummaryLen)
+	} else if contentType == constants.ContentTypeHtml {
+		summary = html.GetSummary(content, constants.SummaryLen)
+	} else {
+		summary = text.GetSummary(content, constants.SummaryLen)
+	}
+	return
+}
