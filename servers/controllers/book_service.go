@@ -135,3 +135,17 @@ func (controller *bookController) DeleteBook(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, book)
 }
+
+func (controller *bookController) UpdateBook(c echo.Context) error {
+	book, result := controller.service.UpdateBook(dto, c.Param("id"))
+	if result != nil {
+		return c.JSON(http.StatusBadRequest, result)
+	}
+ 
+	dto := dto.NewBookDto(controller.container.GetMessages())
+	if err := c.Bind(dto); err != nil {
+		return c.JSON(http.StatusBadRequest, dto)
+	}
+	
+	return c.JSON(http.StatusOK, book)
+}
