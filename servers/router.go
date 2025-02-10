@@ -159,3 +159,40 @@ func setBookController(e *echo.Echo, container container.Container) {
 	e.DELETE(config.APIBooksID, func(c echo.Context) error { return book.DeleteBook(c) })
 }
 
+// Init initialize the routing of this application.
+func Init(e *echo.Echo, container container.Container) {
+	setCORSConfig(e, container)
+
+	setErrorController(e, container)
+	setBookController(e, container)
+	setCategoryController(e, container)
+	setFormatController(e, container)
+	setAccountController(e, container)
+	setHealthController(e, container)
+
+	setSwagger(container, e)
+}
+
+func setCORSConfig(e *echo.Echo, container container.Container) {
+	if container.GetConfig().Extension.CorsEnabled {
+		e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+			AllowCredentials:                         true,
+			UnsafeWildcardOriginWithAllowCredentials: true,
+			AllowOrigins:                             []string{"*"},
+			AllowHeaders: []string{
+				echo.HeaderAccessControlAllowHeaders,
+				echo.HeaderContentType,
+				echo.HeaderContentLength,
+				echo.HeaderAcceptEncoding,
+			},
+			AllowMethods: []string{
+				http.MethodGet,
+				http.MethodPost,
+				http.MethodPut,
+				http.MethodDelete,
+			},
+			MaxAge: 86400,
+		}))
+	}
+}
+
