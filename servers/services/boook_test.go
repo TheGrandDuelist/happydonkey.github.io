@@ -299,7 +299,7 @@ func TestCreateBook_NotCategory(t *testing.T) {
 	assert.Equal(t, "Failed to the registration", err["error"])
 }
 
-func TestCreateBook_NotFormat(t *testing.T) {
+func TestCreateBook_NotFormat_NA(t *testing.T) {
 	container := test.PrepareForServiceTest()
 
 	service := NewBookService(container)
@@ -307,4 +307,39 @@ func TestCreateBook_NotFormat(t *testing.T) {
 
 	assert.Nil(t, result)
 	assert.Equal(t, "Failed to the registration", err["error"])
+}
+
+func TestFindByID_Success_NA(t *testing.T) {
+	container := test.PrepareForServiceTest()
+
+	setUpTestData(container)
+
+	service := NewBookService(container)
+	result, err := service.FindByID("1")
+
+	assert.Equal(t, uint(1), result.ID)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, result)
+}
+
+func TestFindByID_IdNotNumeric(t *testing.T) {
+	container := test.PrepareForServiceTest()
+
+	setUpTestData(container)
+
+	service := NewBookService(container)
+	result, err := service.FindByID("ABCD")
+
+	assert.Nil(t, result)
+	assert.Error(t, err, "failed to fetch data")
+}
+
+func TestFindByID_EntityNotFound_NA(t *testing.T) {
+	container := test.PrepareForServiceTest()
+	service := NewBookService(container)
+	result, err := service.FindByID("9999")
+	setUpTestData(container)
+
+	assert.Nil(t, result)
+	assert.Error(t, err, "failed to fetch data")
 }
