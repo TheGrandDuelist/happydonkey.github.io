@@ -14,6 +14,7 @@ func Start() {
 	addCronFunc(c, "0 0 4 ? * *", func() {
 		sitemap.Generate()
 	})
+	
 	// Generate RSS
 	addCronFunc(c, "@every 30m", func() {
 		services.ArticleService.GenerateRss()
@@ -30,6 +31,7 @@ func StartTest() {
 	addCronFunc(c, "0 0 4 ? * *", func() {
 		sitemap.Generate()
 	})
+	
 	// Generate RSS
 	addCronFunc(c, "@every 30m", func() {
 		services.ArticleService.GenerateRss()
@@ -103,6 +105,14 @@ func addCronFunc(c *cron.Cron, sepc string, cmd func()) {
 	}
 }
 
+func addCronFuncTest(c *cron.Cron, sepc string, cmd func()) {
+	err := c.AddFunc(sepc, cmd)
+	if err != nil {
+		logrus.Error(err)
+	}
+}
+
+
 func delCronFunc(c *cron.Cron, sepc string, cmd func()) {
 	err := c.DelFunc(sepc, cmd)
 	if err != nil {
@@ -116,6 +126,13 @@ func addCronFuncTest(c *cron.Cron, sepc string, cmd func()) {
 		sitemap.Generate()
 	})
 	err := c.AddFunc(sepc, cmd)
+	if err != nil {
+		logrus.Error(err)
+	}
+}
+
+func delCronFuncTest(c *cron.Cron, sepc string, cmd func()) {
+	err := c.DelFunc(sepc, cmd)
 	if err != nil {
 		logrus.Error(err)
 	}
