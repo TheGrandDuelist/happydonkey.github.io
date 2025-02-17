@@ -201,3 +201,102 @@ func SearchTopic(keyword string, nodeId int64, timeRange, page, limit int) (docs
 	}
 	return
 }
+func UpdateTopicIndexNC(topic *model.Topic) {
+	if topic == nil {
+		return
+	}
+	if initClient() == nil {
+		logrus.Error(errNoConfig)
+		return
+	}
+	doc := NewTopicDoc(topic)
+	if doc == nil {
+		logrus.Error("Topic doc is null. ")
+		return
+	}
+	logrus.Infof("Es add index topic, id = %d", topic.Id)
+	if response, err := client.Index().
+		Index(index).
+		BodyJson(doc).
+		Id(strconv.FormatInt(doc.Id, 10)).
+		Do(context.Background()); err == nil {
+		logrus.Info(response.Result)
+	} else {
+		logrus.Error(err)
+	}
+}
+
+func SearchTopicNC(keyword string, nodeId int64, timeRange, page, limit int) (docs []TopicDocument, paging *sqls.Paging, err error) {
+	if initClient() == nil {
+		err = errNoConfig
+		return
+	}
+
+	paging = &sqls.Paging{Page: page, Limit: limit}
+
+	query := elastic.NewBoolQuery().
+		Must(elastic.NewTermQuery("status", constants.StatusOk))
+	if nodeId != 0 {
+		if nodeId == -1 { // 推荐
+			query.Must(elastic.NewTermQuery("recommend", true))
+		} else {
+			query.Must(elastic.NewTermQuery("nodeId", nodeId))
+		}
+	}
+	if timeRange == 1 { // 一天内
+		beginTime := dates.Timestamp(time.Now().Add(-24 * time.Hour))
+		query.Must(elastic.NewRangeQuery("createTime").Gte(beginTime))
+	} else if timeRange == 2 { // 一周内
+		beginTime := dates.Timestamp(time.Now().Add(-7 * 24 * time.Hour))
+		query.Must(elastic.NewRangeQuery("createTime").Gte(beginTime))
+	} else if timeRange == 3 { // 一月内
+		beginTime := dates.Timestamp(time.Now().AddDate(0, -1, 0))
+		query.Must(elastic.NewRangeQuery("createTime").Gte(beginTime))
+	} else if timeRange == 4 { // 一年内
+		beginTime := dates.Timestamp(time.Now().AddDate(-1, 0, 0))
+		query.Must(elastic.NewRangeQuery("createTime").Gte(beginTime))
+	}
+	query.Must(elastic.NewMultiMatchQuery(keyword, "title", "content", "tags"))
+
+	highlight := elastic.NewHighlight().
+		PreTags("<span class='search-highlight'>").PostTags("</span>").
+		Fields(elastic.NewHighlighterField("title"), elastic.NewHighlighterField("content"), elastic.NewHighlighterField("nickname"),
+			elastic.NewHighlighterField("tags"))
+
+	searchResult, err := client.Search().
+		Index(index).
+		Query(query).
+		From(paging.Offset()).Size(paging.Limit).
+		Highlight(highlight).
+		Do(context.Background())
+	if err != nil {
+		return
+	}
+	// logrus.Infof("Query took %d milliseconds\n", searchResult.TookInMillis)
+
+	if totalHits := searchResult.TotalHits(); totalHits > 0 {
+		paging.Total = totalHits
+		for _, hit := range searchResult.Hits.Hits {
+			var doc TopicDocument
+			if err := jsons.Parse(string(hit.Source), &doc); err == nil {
+				if len(hit.Highlight["title"]) > 0 && strs.IsNotBlank(hit.Highlight["title"][0]) {
+					doc.Title = hit.Highlight["title"][0]
+				}
+				if len(hit.Highlight["content"]) > 0 && strs.IsNotBlank(hit.Highlight["content"][0]) {
+					doc.Content = hit.Highlight["content"][0]
+				} else {
+					doc.Content = html2.GetSummary(doc.Content, 128)
+				}
+				if len(hit.Highlight["nickname"]) > 0 && strs.IsNotBlank(hit.Highlight["nickname"][0]) {
+					doc.Nickname = hit.Highlight["nickname"][0]
+				} else if len(hit.Highlight["tags"]) > 0 {
+					doc.Tags = hit.Highlight["tags"]
+				}
+				docs = append(docs, doc)
+			} else {
+				logrus.Error(err)
+			}
+		}
+	}
+	return
+}
