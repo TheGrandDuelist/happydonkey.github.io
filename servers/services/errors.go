@@ -10,5 +10,7 @@ var (
 	ForbiddenError      = web.NewError(1001, "已被禁言")
 	UserDisabled        = web.NewError(1002, "账号已禁用")
 	InObservationPeriod = web.NewError(1003, "账号尚在观察期")
-	EmailNotVerified    = web.NewError(1004, "请先验证邮箱")
+	PhoneNotVerified    = web.NewError(1004, "请先验证手机")
+	EmailNotVerified    = web.NewError(1005, "请先验证邮箱")
+	DataInvalid         = web.NewError(1006, "数据异常")
 )
