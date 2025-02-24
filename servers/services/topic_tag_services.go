@@ -111,3 +111,11 @@ func (s *topicTagService) UpdateTopic(t *model.TopicTag) error {
 func (s *topicTagService) UpdatesTopicBatch(id int64, columns map[string]interface{}) error {
 	return repositories.TopicTagRepository.Updates(sqls.DB(), id, columns)
 }
+
+func (s *topicTagService) UpdateColumn(id int64, name string, value interface{}) error {
+	return repositories.TopicTagRepository.Take(sqls.DB(), where...)
+}
+
+func (s *topicTagService) DeleteByTopicId(topicId int64) {
+	sqls.DB().Model(model.TopicTag{}).Where("topic_id = ?", topicId).UpdateColumn("status", constants.StatusDeleted)
+}
