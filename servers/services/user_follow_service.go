@@ -403,3 +403,52 @@ func (s *userFollowService) UnFollowUsers(userId, otherId int64) error {
 	})
 	return nil
 }
+
+func (s *userFollowService) UnFollowUser(userId, otherId int64) error {
+	if !s.IsFollowed(userId, otherId) {
+		return nil
+	}
+	if userId == otherId {
+		// 自己关注自己，不进行处理。
+		return nil
+	}
+	
+	err := sqls.DB().Transaction(func(tx *gorm.DB) error {
+		success := tx.Where("user_id = ? and other_id = ?", userId, otherId).Delete(model.UserFollow{}).RowsAffected > 0
+		if success {
+			tx.Exec("update t_user_follow set status = ? where user_id = ? and other_id = ?",
+				constants.FollowStatusFollow, otherId, userId)
+		}
+
+	
+		cache.UserCache.Invalidate(userId)
+
+		if err := tx.Model(&model.User{}).Where("id = ? and fans_count > 0", otherId).Updates(map[string]interface{}{
+			"fans_count": gorm.Expr("fans_count - 1"),
+		}).Error; err != nil {
+			return err
+		}
+		
+		if err := tx.Model(&model.User{}).Where("id = ? and follow_count > 0", userId).Updates(map[string]interface{}{
+			"follow_count": gorm.Expr("follow_count - 1"),
+		}).Error; err != nil {
+			return err
+		}
+		
+		cache.UserCache.Invalidate(otherId)
+
+		return nil
+	})
+	
+	if err != nil {
+		return err
+	}
+
+	// 发送mq消息
+	event.Send(event.UnFollowEvent{
+		UserId:  userId,
+		OtherId: otherId,
+	})
+	return nil
+}
+
