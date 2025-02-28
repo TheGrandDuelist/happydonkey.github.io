@@ -441,3 +441,29 @@ func (s *articleService) UpdateColumnId(id int64, name string, value interface{}
 	err := repositories.ArticleRepository.UpdateColumn(sqls.DB(), id, name, value)
 	return err
 }
+
+// 收藏文章
+func (s *articleService) GetLikedArticles(articleId int64) []model.Article {
+	tagIds := cache.ArticleTagCache.Get(articleId)
+	if len(tagIds) == 0 {
+		return nil
+	}
+	var articleTags []model.ArticleTag
+	sqls.DB().Where("tag_id in (?)", tagIds).Limit(30).Find(&articleTags)
+
+	set := hashset.New()
+	if len(articleTags) > 0 {
+		for _, articleTag := range articleTags {
+			set.Add(articleTag.ArticleId)
+		}
+	}
+
+	var articleIds []int64
+	for i, articleId := range set.Values() {
+		if i < 10 {
+			articleIds = append(articleIds, articleId.(int64))
+		}
+	}
+
+	return s.GetArticleInIds(articleIds)
+}
