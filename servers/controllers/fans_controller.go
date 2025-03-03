@@ -40,10 +40,6 @@ func (c *FansController) PostFollow() *web.JsonResult {
 
 func (c *FansController) PostUnfollow() *web.JsonResult {
 	otherId := params.FormValueInt64Default(c.Ctx, "userId", 0)
-	if otherId <= 0 {
-		return web.JsonErrorMsg("param: userId required")
-	}
-
 	user := services.UserTokenService.GetCurrent(c.Ctx)
 	if user == nil {
 		return web.JsonError(errs.NotLogin)
@@ -53,6 +49,10 @@ func (c *FansController) PostUnfollow() *web.JsonResult {
 	if err != nil {
 		return web.JsonError(err)
 	}
+	if otherId <= 0 {
+		return web.JsonErrorMsg("param: userId required")
+	}
+
 	return web.JsonSuccess()
 }
 
@@ -77,10 +77,7 @@ func (c *FansController) GetFans() *web.JsonResult {
 
 	current := services.UserTokenService.GetCurrent(c.Ctx)
 	
-	var followedSet hashset.Set
-	if current != nil {
-		followedSet = services.UserFollowService.IsFollowedUsers(current.Id, userIds...)
-	}
+	
 	
 	var itemList []*model.UserInfo
     	for _, id := range userIds {
@@ -94,6 +91,11 @@ func (c *FansController) GetFans() *web.JsonResult {
 		item := render.BuildUserInfoDefaultIfNull(id)
 		item.Followed = followedSet.Contains(id)
 		itemList = append(itemList, item)
+	}
+
+	var followedSet hashset.Set
+	if current != nil {
+		followedSet = services.UserFollowService.IsFollowedUsers(current.Id, userIds...)
 	}
 	
 	return web.JsonCursorData(itemList, strconv.FormatInt(cursor, 10), hasMore)
@@ -139,6 +141,13 @@ func (c *FansController) GetRecentFollow() *web.JsonResult {
 
 	current := services.UserTokenService.GetCurrent(c.Ctx)
 	var followedSet hashset.Set
+	
+	var itemList []*model.UserInfo
+	for _, id := range userIds {
+		item := render.BuildUserInfoDefaultIfNull(id)
+		item.Followed = followedSet.Contains(id)
+		itemList = append(itemList, item)
+	}
 	if current != nil {
 		if current.Id == userId {
 			followedSet = *hashset.New()
@@ -150,12 +159,6 @@ func (c *FansController) GetRecentFollow() *web.JsonResult {
 		}
 	}
 
-	var itemList []*model.UserInfo
-	for _, id := range userIds {
-		item := render.BuildUserInfoDefaultIfNull(id)
-		item.Followed = followedSet.Contains(id)
-		itemList = append(itemList, item)
-	}
 	return web.JsonCursorData(itemList, strconv.FormatInt(cursor, 10), hasMore)
 }
 
