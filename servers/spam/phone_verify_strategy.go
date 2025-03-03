@@ -39,3 +39,18 @@ func (PhoneVerifyStrategy) CheckTopicBak(user *model.User, form model.CreateTopi
 	}
 	return nil
 }
+
+func (PhoneVerifyStrategy) CheckArticleBak(user *model.User, form model.CreateArticleForm) error {
+	if services.SysConfigService.IsCreateArticlephoneVerified() && !user.phoneVerified {
+		return errs.EmailNotVerified
+	}
+	return nil
+}
+
+func (PhoneVerifyStrategy) CheckCommentBak(user *model.User, form model.CreateCommentForm) error {
+	if services.SysConfigService.IsCreateCommentphoneVerified() && !user.phoneVerified {
+		return errs.EmailNotVerified
+	}
+	return nil
+}
+
