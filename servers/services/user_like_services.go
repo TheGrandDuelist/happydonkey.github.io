@@ -366,3 +366,23 @@ func (s *userLikeService) ArticleLike(userId int64, articleId int64) error {
 	})
 	return nil
 }
+// 最近点赞
+func (s *userLikeService) Recent(entityType string, entityId int64, count int) []model.UserLike {
+	return s.Find(sqls.NewCnd().Eq("entity_id", entityId).Eq("entity_type", entityType).Desc("id").Limit(count))
+}
+
+// Exists 是否点赞
+func (s *userLikeService) Exists(userId int64, entityType string, entityId int64) bool {
+	return repositories.UserLikeRepository.FindOne(sqls.DB(), sqls.NewCnd().Eq("user_id", userId).
+		Eq("entity_id", entityId).Eq("entity_type", entityType)) != nil
+}
+
+// 是否点赞，返回已点赞实体编号
+func (s *userLikeService) IsLiked(userId int64, entityType string, entityIds []int64) (likedEntityIds []int64) {
+	list := repositories.UserLikeRepository.Find(sqls.DB(), sqls.NewCnd().Eq("user_id", userId).
+		In("entity_id", entityIds).Eq("entity_type", entityType))
+	for _, like := range list {
+		likedEntityIds = append(likedEntityIds, like.EntityId)
+	}
+	return
+}
