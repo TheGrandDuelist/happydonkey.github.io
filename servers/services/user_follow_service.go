@@ -452,3 +452,57 @@ func (s *userFollowService) UnFollowUser(userId, otherId int64) error {
 	return nil
 }
 
+func (s *userFollowService) FollowUser(userId, otherId int64) error {
+	if userId == otherId {
+		// 自己关注自己，不进行处理。
+		// return errors.New("自己不能关注自己")
+		return nil
+	}
+
+	if s.IsFollowed(userId, otherId) {
+		return nil
+	}
+
+	err := sqls.DB().Transaction(func(tx *gorm.DB) error {
+		// 如果对方也关注了我，那么更新状态为互相关注
+		otherFollowed := tx.Exec("update t_user_follow set status = ? where user_id = ? and other_id = ?",
+			constants.FollowStatusBoth, otherId, userId).RowsAffected > 0
+		status := constants.FollowStatusFollow
+		if otherFollowed {
+			status = constants.FollowStatusBoth
+		}
+
+		if err := repositories.UserRepository.Updates(tx, userId, map[string]interface{}{
+			"follow_count": gorm.Expr("follow_count + 1"),
+		}); err != nil {
+			return err
+		}
+		cache.UserCache.Invalidate(userId)
+
+		if err := repositories.UserRepository.Updates(tx, otherId, map[string]interface{}{
+			"fans_count": gorm.Expr("fans_count + 1"),
+		}); err != nil {
+			return err
+		}
+		cache.UserCache.Invalidate(otherId)
+
+		return repositories.UserFollowRepository.Create(tx, &model.UserFollow{
+			UserId:     userId,
+			OtherId:    otherId,
+			Status:     status,
+			CreateTime: dates.NowTimestamp(),
+		})
+	})
+	if err != nil {
+		return err
+	}
+
+	// 发送mq消息
+	event.Send(event.FollowEvent{
+		UserId:  userId,
+		OtherId: otherId,
+	})
+	return nil
+}
+
+
