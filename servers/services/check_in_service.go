@@ -147,3 +147,10 @@ func (s *checkInService) Delete(id int64) {
 func (s *checkInService) GetByUserId(userId int64) *model.CheckIn {
 	return s.FindOne(sqls.NewCnd().Eq("user_id", userId))
 }
+func (s *checkInService) FindPageByParams(params *params.QueryParams) (list []model.CheckIn, paging *sqls.Paging) {
+	return repositories.CheckInRepository.FindPageByParams(sqls.DB(), params)
+}
+
+func (s *checkInService) Updates(id int64, columns map[string]interface{}) error {
+	return repositories.CheckInRepository.Updates(sqls.DB(), id, columns)
+}
