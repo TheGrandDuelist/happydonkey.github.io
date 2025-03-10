@@ -85,6 +85,22 @@ func (s *userScoreLogService) UpdateColumns(id int64, name string, value interfa
 	return repositories.UserScoreLogRepository.UpdateColumn(sqls.DB(), id, name, value)
 }
 
+func (s *userScoreLogService) FindOneById(cnd *sqls.Cnd) *model.UserScoreLog {
+	return repositories.UserScoreLogRepository.FindOneById(sqls.DB(), cnd)
+}
+
+func (s *userScoreLogService) FindPageByParam(params *params.QueryParams) (list []model.UserScoreLog, paging *sqls.Paging) {
+	return repositories.UserScoreLogRepository.FindPageByParam(sqls.DB(), params)
+}
+
+func (s *userScoreLogService) FindPageByCndKey(cnd *sqls.Cnd) (list []model.UserScoreLog, paging *sqls.Paging) {
+	return repositories.UserScoreLogRepository.FindPageByCndKey(sqls.DB(), cnd)
+}
+
+func (s *userScoreLogService) UpdatePage(t *model.UserScoreLog) error {
+	return repositories.UserScoreLogRepository.Update(sqls.DB(), t)
+}
+
 func (s *userScoreLogService) DeletePage(id int64) {
 	repositories.UserScoreLogRepository.Delete(sqls.DB(), id)
 }
