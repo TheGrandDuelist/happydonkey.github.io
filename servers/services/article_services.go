@@ -257,6 +257,31 @@ func (s *articleService) Edit(articleId int64, tags []string, title, content str
 	return web.FromError(err)
 }
 
+// 根据文章编号批量获取文章
+func (s *articleService) GetArticleInIds(articleIds []int64) []model.Article {
+	if len(articleIds) == 0 {
+		return nil
+	}
+	var articles []model.Article
+	sqls.DB().Where("id in (?)", articleIds).Order("id desc").Find(&articles)
+	return articles
+}
+
+func (s *articleService) UpdateColumn(id int64, name string, value interface{}) error {
+	err := repositories.ArticleRepository.UpdateColumn(sqls.DB(), id, name, value)
+	return err
+}
+
+// 获取文章对应的标签
+func (s *articleService) GetArticleTags(articleId int64) []model.Tag {
+	articleTags := repositories.ArticleTagRepository.Find(sqls.DB(), sqls.NewCnd().Where("article_id = ?", articleId))
+	var tagIds []int64
+	for _, articleTag := range articleTags {
+		tagIds = append(tagIds, articleTag.TagId)
+	}
+	return cache.TagCache.GetList(tagIds)
+}
+
 func (s *articleService) PutTags(articleId int64, tags []string) {
 	tagIds, _ := repositories.TagRepository.GetOrCreates(sqls.DB(), tags)          // 创建文章对应标签
 	repositories.ArticleTagRepository.DeleteArticleTags(sqls.DB(), articleId)      // 先删掉所有的标签
