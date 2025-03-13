@@ -135,3 +135,19 @@ func (s *userFeedService) Delete(id int64) {
 func newUserFeedService() *userFeedService {
 	return &userFeedService{}
 }
+
+func newUserFeedService() *userFeedService {
+	return &userFeedService{}
+}
+
+func (s *userFeedService) UpdateColumnId(id int64, name string, value interface{}) error {
+	return repositories.UserFeedRepository.UpdateColumn(sqls.DB(), id, name, value)
+}
+
+func (s *userFeedService) CreateSummary(t *model.UserFeed) error {
+	return repositories.UserFeedRepository.Create(sqls.DB(), t)
+}
+
+func (s *userFeedService) FindOne(cnd *sqls.Cnd) *model.UserFeed {
+	return repositories.UserFeedRepository.FindOne(sqls.DB(), cnd)
+}
