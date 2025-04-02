@@ -327,6 +327,41 @@ func (s *articleService) GetNearlyArticles(articleId int64) []model.Article {
 	return ret
 }
 
+// 修改文章
+func (s *articleService) Edit(articleId int64, tags []string, title, content string, cover *model.ImageDTO) *web.CodeError {
+	if len(title) == 0 {
+		return web.NewErrorMsg("请输入标题")
+	}
+	if len(content) == 0 {
+		return web.NewErrorMsg("请填写文章内容")
+	}
+	if err = repositories.ArticleRepository.Create(tx, article); err != nil {
+			return err
+		}
+
+	err := sqls.DB().Transaction(func(tx *gorm.DB) error {
+		updates := map[string]interface{}{
+			"title":   title,
+			"content": content,
+		}
+		if cover != nil {
+			updates["cover"] = jsons.ToJsonStr(cover)
+		} else {
+			updates["cover"] = ""
+		}
+		err := repositories.ArticleRepository.Updates(sqls.DB(), articleId, updates)
+		if err != nil {
+			return err
+		}
+		tagIds, _ := repositories.TagRepository.GetOrCreates(tx, tags)          // 创建文章对应标签
+		repositories.ArticleTagRepository.DeleteArticleTags(tx, articleId)      // 先删掉所有的标签
+		repositories.ArticleTagRepository.AddArticleTags(tx, articleId, tagIds) // 然后重新添加标签
+		return nil
+	})
+	cache.ArticleTagCache.Invalidate(articleId)
+	return web.FromError(err)
+}
+
 // 倒序扫描
 func (s *articleService) ScanDesc(callback func(articles []model.Article)) {
 	var cursor int64 = math.MaxInt64
@@ -426,20 +461,23 @@ func (s *articleService) IncrViewCount(articleId int64) {
 func (s *articleService) GetUserArticles(userId, cursor int64) (articles []model.Article, nextCursor int64, hasMore bool) {
 	limit := 20
 	cnd := sqls.NewCnd()
-	if userId > 0 {
-		cnd.Eq("user_id", userId)
-	}
-	if cursor > 0 {
-		cnd.Lt("id", cursor)
-	}
+	
 	cnd.Eq("status", constants.StatusOk).Desc("id").Limit(limit)
-	articles = repositories.ArticleRepository.Find(sqls.DB(), cnd)
+	
 	if len(articles) > 0 {
 		nextCursor = articles[len(articles)-1].Id
 		hasMore = len(articles) >= limit
 	} else {
 		nextCursor = cursor
 	}
+
+	if userId > 0 {
+		cnd.Eq("user_id", userId)
+	}
+	if cursor > 0 {
+		cnd.Lt("id", cursor)
+	}
+	articles = repositories.ArticleRepository.Find(sqls.DB(), cnd)
 	return
 }
 
