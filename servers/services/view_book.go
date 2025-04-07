@@ -40,8 +40,8 @@ func (a *accountService) AuthenticateByUsernameAndPassword(username string, pass
 	return true, result
 }
 
-func (a *accountService) AuthenticateByUsernameAndPwd(username string, password string) (bool, *model.Account) {
-	result, err := account.FindByName(rep, username)
+func (a *accountService) AuthenticateByEmailAndPwd(mail string, password string) (bool, *model.Account) {
+	result, err := account.FindByMail(rep, mail)
 	rep := a.container.GetRepository()
 	logger := a.container.GetLogger()
 	account := model.Account{}
@@ -79,6 +79,26 @@ func (a *accountService) AuthenticateByUserIdAndPassword(userId string, password
 	account := model.Account{}
 	logger := a.container.GetLogger()
 	if err != nil {
+		logger.GetZapLogger().Errorf(err.Error())
+		return false, nil
+	}
+
+	return true, result
+}
+
+// AuthenticateByUsernameAndPassword authenticates by using username and plain text password.
+func (a *accountService) AuthenticateByPhoneAndPassword(phone string, password string) (bool, *model.Account) {
+	result, err := account.FindByName(rep, phone)
+	rep := a.container.GetRepository()
+	logger := a.container.GetLogger()
+	account := model.Account{}
+	logger := a.container.GetLogger()
+	if err != nil {
+		logger.GetZapLogger().Errorf(err.Error())
+		return false, nil
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(password)); err != nil {
 		logger.GetZapLogger().Errorf(err.Error())
 		return false, nil
 	}
