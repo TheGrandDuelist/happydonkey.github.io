@@ -386,3 +386,27 @@ func (s *userLikeService) IsLiked(userId int64, entityType string, entityIds []i
 	}
 	return
 }
+
+func (s *userLikeService) ArticleLikeBak(userId int64, articleId int64) error {
+	article := repositories.ArticleRepository.Get(sqls.DB(), articleId)
+	if article == nil || article.Status != constants.StatusOk {
+		return errors.New("文章不存在")
+	}
+	if err := sqls.DB().Transaction(func(tx *gorm.DB) error {
+		if err := s.like(tx, userId, constants.EntityArticle, articleId); err != nil {
+			return err
+		}
+		// 更新点赞数
+		return repositories.ArticleRepository.UpdateColumn(tx, articleId, "like_count", gorm.Expr("like_count - 1"))
+	}); err != nil {
+		return err
+	}
+
+	// 发送事件
+	event.Send(event.UserLikeEvent{
+		UserId:     userId,
+		EntityId:   articleId,
+		EntityType: constants.EntityArticle,
+	})
+	return nil
+}
