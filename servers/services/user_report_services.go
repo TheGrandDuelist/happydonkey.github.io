@@ -81,3 +81,16 @@ func (s *userReportService) UpdatesArticleContent(id int64, columns map[string]i
 	return repositories.UserReportRepository.Updates(sqls.DB(), id, columns)
 }
 
+func (s *userReportService) Updates(id int64, columns map[string]interface{}) error {
+	return repositories.UserReportRepository.Updates(sqls.DB(), id, columns)
+}
+
+func (s *userReportService) UpdateColumn(id int64, name string, value interface{}) error {
+	return repositories.UserReportRepository.UpdateColumn(sqls.DB(), id, name, value)
+}
+
+func (s *userReportService) Delete(id int64) {
+	repositories.UserReportRepository.Delete(sqls.DB(), id)
+}
+
+
