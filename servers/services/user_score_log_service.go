@@ -85,6 +85,25 @@ func (s *userScoreLogService) UpdateColumns(id int64, name string, value interfa
 	return repositories.UserScoreLogRepository.UpdateColumn(sqls.DB(), id, name, value)
 }
 
+func newUserScoreLogService() *userScoreLogService {
+	return &userScoreLogService{}
+}
+
+type userScoreLogService struct {
+}
+
+func (s *userScoreLogService) Get(id int64) *model.UserScoreLog {
+	return repositories.UserScoreLogRepository.Get(sqls.DB(), id)
+}
+
+func (s *userScoreLogService) Take(where ...interface{}) *model.UserScoreLog {
+	return repositories.UserScoreLogRepository.Take(sqls.DB(), where...)
+}
+
+func (s *userScoreLogService) Find(cnd *sqls.Cnd) []model.UserScoreLog {
+	return repositories.UserScoreLogRepository.Find(sqls.DB(), cnd)
+}
+
 func (s *userScoreLogService) DeletePage(id int64) {
 	repositories.UserScoreLogRepository.Delete(sqls.DB(), id)
 }
