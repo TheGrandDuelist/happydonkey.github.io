@@ -15,3 +15,12 @@ func TestFindAllFormats_Success(t *testing.T) {
 
 	assert.Len(t, *result, 2)
 }
+
+func TestFindAllFormats_Failer(t *testing.T) {
+	container := test.PrepareForServiceTest()
+
+	service := NewFormatService(container)
+	result := service.FindAllFormats()
+
+	assert.Len(t, *result, 2)
+}
